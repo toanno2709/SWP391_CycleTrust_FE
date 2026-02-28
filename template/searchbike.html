@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2ecc70",
+                        "background-light": "#f6f8f7",
+                        "background-dark": "#131f18",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>CycleTrust | Search Gravel Bikes</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-4 md:px-10 py-3">
+<div class="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8">
+<div class="flex items-center gap-2 md:gap-4 text-primary">
+<span class="material-symbols-outlined text-3xl">directions_bike</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold leading-tight tracking-tight">CycleTrust</h2>
+</div>
+<div class="flex-1 max-w-xl">
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border-none bg-slate-100 dark:bg-slate-800 rounded-xl focus:ring-2 focus:ring-primary/50 text-sm" placeholder="Search for bikes, parts or brands..." type="text" value="Gravel Bikes"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden md:flex items-center justify-center p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button class="flex items-center justify-center p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+</button>
+<div class="size-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-primary/10">
+<img alt="User avatar" data-alt="Profile picture of a cyclist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARmJTXm__ZaRWlfteW47_zE6z8oatZmBLnBPbQW5_tS1LWNLE4a0y-G5Gip5tbsOUkaRQiWK1ATiR5BmYYYFF4lAlv3f--_NzUoZ0opVpi3-fDzZq-HVuznydt74NmaYpEBnu5ckb5rqIpLuQmcqjfux_ygkUsZdXA9ippQoJk-HGBFcHHyXC2umC2MJ4x4C-NHg80qsIFBcfguTmvE6AziEVtVQTBcePDnQQLe3xGmXNIv2T891DFNPSSI6SEQ5Rmx1BYh_h009g"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 md:px-10 py-8 flex flex-col md:flex-row gap-8">
+<aside class="w-full md:w-64 shrink-0 space-y-8">
+<div class="flex items-center justify-between">
+<h3 class="text-lg font-bold">Filters</h3>
+<button class="text-xs font-semibold text-primary uppercase tracking-wider">Clear all</button>
+</div>
+<div class="space-y-6">
+<div>
+<label class="text-sm font-semibold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">sell</span> Brand
+                    </label>
+<div class="space-y-2 mt-2">
+<label class="flex items-center gap-2 cursor-pointer">
+<input checked="" class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm">Specialized</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm">Trek</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm">Giant</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-sm">Canyon</span>
+</label>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<label class="text-sm font-semibold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">category</span> Type
+                    </label>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<button class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 border border-transparent hover:border-primary/50">Road</button>
+<button class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 border border-transparent hover:border-primary/50">MTB</button>
+<button class="px-3 py-2 text-xs font-medium rounded-lg bg-primary/10 text-primary border border-primary/30">Gravel</button>
+<button class="px-3 py-2 text-xs font-medium rounded-lg bg-slate-100 dark:bg-slate-800 border border-transparent hover:border-primary/50">Triathlon</button>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<label class="text-sm font-semibold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">straighten</span> Size
+                    </label>
+<div class="flex flex-wrap gap-2 mt-2">
+<button class="w-10 h-10 flex items-center justify-center text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">XS</button>
+<button class="w-10 h-10 flex items-center justify-center text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">S</button>
+<button class="w-10 h-10 flex items-center justify-center text-xs font-bold rounded-lg bg-primary text-white">M</button>
+<button class="w-10 h-10 flex items-center justify-center text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">L</button>
+<button class="w-10 h-10 flex items-center justify-center text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-800">XL</button>
+</div>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<label class="text-sm font-semibold mb-3 flex items-center justify-between">
+<span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">payments</span> Price Range</span>
+<span class="text-xs text-slate-500 font-normal">$500 - $4,500</span>
+</label>
+<input class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" max="10000" min="0" step="100" type="range"/>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<label class="text-sm font-semibold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">verified_user</span> Condition
+                    </label>
+<select class="mt-2 block w-full bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-primary">
+<option>Any Condition</option>
+<option>New</option>
+<option>Like New</option>
+<option>Good</option>
+</select>
+</div>
+<div class="pt-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center justify-between">
+<label class="text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">verified</span> Verified Only
+                        </label>
+<button class="relative inline-flex h-6 w-11 items-center rounded-full bg-primary">
+<span class="inline-block h-4 w-4 transform rounded-full bg-white translate-x-6"></span>
+</button>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-slate-900 font-bold py-3 rounded-xl hover:shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                Apply Filters
+            </button>
+</aside>
+<section class="flex-1">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+<div>
+<h1 class="text-2xl font-bold mb-1">Gravel Bikes</h1>
+<p class="text-slate-500 text-sm">Showing 24 results for your selection</p>
+</div>
+<div class="flex items-center gap-3">
+<label class="text-sm font-medium text-slate-500">Sort by:</label>
+<select class="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-800 rounded-lg text-sm focus:ring-primary min-w-[160px]">
+<option>Newest Listings</option>
+<option>Price: Low to High</option>
+<option>Price: High to Low</option>
+<option>Top Rated</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-end specialized carbon gravel bike in green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFxyLN834ZZJ3KYXL3mPBNqVOBUMjeQXCo3gPDMIHKDWS5kC3Oe_ZeiLvvRKCOR-kwUMEefOasSGH8rfGp5Y6kf3HLpzYNb8SMR0uVO4fnpRdH_f2bf0gl9QtU4ka1gp1bPE_48ggkzpcsCvsYtVzEzQCDxfdntee-X4bYLuXeSrN_clqTs12KH-Arp_KJGbTqU89uUYW6s4VKNqH8N2khFPqo-wjsjb6pAIBYozNakpZaQN325aF2cr3oss5pLYSzedCRJ6eMDnQ"/>
+<div class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-[12px]">verified</span> VERIFIED
+                        </div>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Specialized Diverge STR</h3>
+<span class="text-primary font-bold text-xl">$4,200</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>San Francisco, CA</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">8.9kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Carbon</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">GRX 810</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Trek checkpoint gravel bike on a dirt path" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAJDgYVwaOLbLflK3cImM1o_KTf2_uqSTDqFjvMjwxsGNAOPW7noYkJY8ya9-beM1OoGe6uVs5mxH789ofppSwkBAw9NlHAjTuTHvtGGCO1Ss4dcuKkIVCBM3M6sz3YdSymSDSGDPAhLUM5yurKFEiIW5SxGI01ZdamsFE-YJL3COq6YUWxxi94g24lApX3_WhvCUBBKor9f6tPx4_eGsQZtt2APiSg15RGGiEjcDJB1SXMch7mobkoUNazut5KaB_HNo7kiRN4Q8"/>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Trek Checkpoint SL 6</h3>
+<span class="text-primary font-bold text-xl">$3,150</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Portland, OR</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">9.2kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Alloy</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">SRAM Rival</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Canyon grizl gravel bike in desert setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkNJjzTJkXPOTYrnpOaIK6cOcoKl8eHCRAluw23jzsn_Bz5_vYW4SKU7b7fWGbI-2w_XWyB4QBygQFprs2FTUBgp05nDM-T1HEj8JJuaa3STkv2itgaeFfeab92AU3_w2dR19kQqnz2G54WvFzbiKsTvn0-jc9DEiFP2rfC8spKNltSM2hC4R4QueC9ZnGPh0nnuC0heu2vjPAAGsLX-IBMuLjeClzaSGfW6SzHAvNd8SM1ounQiOMZmS3Nn7raqu6cOCSydEBeuY"/>
+<div class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-[12px]">verified</span> VERIFIED
+                        </div>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Canyon Grizl CF SL 8</h3>
+<span class="text-primary font-bold text-xl">$2,800</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Denver, CO</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">9.1kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Carbon</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">GRX 800</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Giant revolt gravel bike in forest trail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6Vnfwtf-efzL6c009Vnaba46ix14YtsKXDpsy_sT24xBM5pt4TYeU8Ri6Ug4nqQnDzDIT1HXZwSmiEoGH8fxyRejg2O3FuiOGHetI8WNq5dJGj3dbA1avigchtVvJP25lSGT4x75dy5UyLytO2j6p4SFM7qFJxKOKUIxI1g9zlJ-618a9rhcqUb8c9xaLWABqGWBLCKpKrbnEj8Vl2myum8-pljXpGKIZIuIMU-ORLc-6UeUtKsFNEoKPcoQacfqFErZ72cU_67U"/>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Giant Revolt Advanced</h3>
+<span class="text-primary font-bold text-xl">$3,600</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Austin, TX</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">8.7kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Carbon</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">SRAM Force</span>
+</div>
+</div>
+</div>
+</div>
+<!-- More items placeholder -->
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Lightweight gravel bike with aero wheels" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBa0zjEOzyei9K1_QNS7IY1aUpPM6dAIn5466Y8NfkyB8bdHvN7mPFW6pxji1nPZF93tjHuIp0EGv7PvMY5Nogzsgx9l8ROo2oHh6ZHqbSUAN1ZRmwmzw1qmRVG-AXULbz5bWgrbHU7ltIiKr38zfTgX3TnEHV5x_mRHGUk4l9xkgu9H7BvuPj0JdJ1vq4RD3VbMtIyNca8Z6YghdMo90AN1u-_BxVswFcM58aNj1tLAkkUfTn9e4s_UcktjCa82BISHMquTv2uRZ8"/>
+<div class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-[12px]">verified</span> VERIFIED
+                        </div>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Santa Cruz Stigmata</h3>
+<span class="text-primary font-bold text-xl">$4,850</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Santa Cruz, CA</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">8.4kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Carbon</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">SRAM Force</span>
+</div>
+</div>
+</div>
+</div>
+<div class="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all relative">
+<div class="relative aspect-[4/3] overflow-hidden">
+<img alt="Gravel bike" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Classic steel gravel bike with brown sidewall tires" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANL7AKObE2jliqFu4nMQrbJ39vCZhO1NF8ddQGUkmcDCGkvedraojOoox3tolQ3liEKtk01zZNpgyl1sdHSM2FUdBVM5HcFcg0tLTyniWxkJrOVU9XxAKzowrt16Nhx8QcJIp1K_Z8mSmxxC79EKS6Eu04ekbRi7wawbaK-BKF0tbm6H3j13LqDR8wC3e-FVsyGMOqRPbuKU051wmr4-IKIOOwsnwwhbPQDoA7_OYq270ejbdeHWFguDbaEQORgucH5Vt9outW0g4"/>
+<button class="absolute top-3 right-3 p-2 bg-white/90 dark:bg-slate-900/90 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-bold text-lg group-hover:text-primary transition-colors">Ritchey Outback Steel</h3>
+<span class="text-primary font-bold text-xl">$1,950</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400 text-xs mb-4">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Seattle, WA</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">weight</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">10.5kg</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">conversion_path</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Steel</span>
+</div>
+<div class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined text-xl">settings_input_component</span>
+<span class="text-[10px] uppercase font-bold tracking-tighter">Shimano 105</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 flex justify-center">
+<nav class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary">3</button>
+<span class="px-2">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</nav>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-background-dark border-t border-slate-200 dark:border-slate-800 mt-20 py-12">
+<div class="max-w-7xl mx-auto px-4 md:px-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 text-primary mb-6">
+<span class="material-symbols-outlined text-2xl">directions_bike</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">CycleTrust</h2>
+</div>
+<p class="text-sm text-slate-500 leading-relaxed">The premium marketplace for cycling enthusiasts to buy and sell verified high-quality bicycles and gear.</p>
+</div>
+<div>
+<h4 class="font-bold mb-4">Shop</h4>
+<ul class="text-sm space-y-2 text-slate-500">
+<li><a class="hover:text-primary" href="#">Road Bikes</a></li>
+<li><a class="hover:text-primary" href="#">Mountain Bikes</a></li>
+<li><a class="hover:text-primary" href="#">Gravel Bikes</a></li>
+<li><a class="hover:text-primary" href="#">Components</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4">Support</h4>
+<ul class="text-sm space-y-2 text-slate-500">
+<li><a class="hover:text-primary" href="#">How it works</a></li>
+<li><a class="hover:text-primary" href="#">Verification Process</a></li>
+<li><a class="hover:text-primary" href="#">Shipping &amp; Delivery</a></li>
+<li><a class="hover:text-primary" href="#">Contact Us</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-4">Join our Newsletter</h4>
+<p class="text-sm text-slate-500 mb-4">Get the latest listings and cycling tips in your inbox.</p>
+<div class="flex gap-2">
+<input class="flex-1 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-primary" placeholder="Email address" type="email"/>
+<button class="bg-primary px-4 py-2 rounded-lg text-slate-900 font-bold hover:brightness-110 transition-all">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-4 md:px-10 mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 text-center text-xs text-slate-400">
+            © 2024 CycleTrust. All rights reserved. Built for cyclists, by cyclists.
+        </div>
+</footer>
+</body></html>
