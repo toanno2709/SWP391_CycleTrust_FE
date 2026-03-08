@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { authService } from '../../services/auth';
 import { useAuthStore } from '../../store/auth';
 import { ROUTES } from '../../config/constants';
+import { UserRole } from '../../types';
 import { Input, Button } from '../../components/ui';
 import { useForm } from '../../hooks/useForm';
 
@@ -26,7 +27,24 @@ export const LoginPage = () => {
       const response = await authService.login(values);
       setUser(response.user);
       toast.success('Đăng nhập thành công!');
-      navigate(ROUTES.HOME);
+      
+      // Navigate based on role
+      switch (response.user.role) {
+        case UserRole.ADMIN:
+          navigate(ROUTES.ADMIN_DASHBOARD);
+          break;
+        case UserRole.SELLER:
+          navigate(ROUTES.SELLER_DASHBOARD);
+          break;
+        case UserRole.BUYER:
+          navigate(ROUTES.BUYER_DASHBOARD);
+          break;
+        case UserRole.INSPECTOR:
+          navigate(ROUTES.INSPECTOR_DASHBOARD);
+          break;
+        default:
+          navigate(ROUTES.HOME);
+      }
     } catch (error: any) {
       const errorMsg = error.message || 'Đăng nhập thất bại';
       toast.error(errorMsg);

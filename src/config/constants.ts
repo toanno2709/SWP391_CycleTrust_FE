@@ -31,8 +31,12 @@ export const ROUTES = {
   ADMIN_LISTINGS: '/admin/listings',
   ADMIN_USERS: '/admin/users',
   ADMIN_ORDERS: '/admin/orders',
+  ADMIN_CATALOG: '/admin/catalog',
   ADMIN_BRANDS: '/admin/brands',
   ADMIN_CATEGORIES: '/admin/categories',
+  ADMIN_TRANSACTIONS: '/admin/transactions',
+  ADMIN_DISPUTES: '/admin/disputes',
+  ADMIN_DEPOSIT_POLICY: '/admin/deposit-policy',
   
   INSPECTOR_DASHBOARD: '/inspector/dashboard',
   INSPECTOR_LISTINGS: '/inspector/listings',

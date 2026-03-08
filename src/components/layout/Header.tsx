@@ -1,10 +1,14 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Dropdown, Avatar } from 'antd';
+import type { MenuProps } from 'antd';
+import { DownOutlined, UserOutlined, DashboardOutlined, LogoutOutlined, ShoppingOutlined, HeartOutlined, FileTextOutlined, WarningOutlined, InboxOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/auth';
 import { ROUTES } from '../../config/constants';
 import { UserRole } from '../../types';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
+  const navigate = useNavigate();
 
   const getDashboardRoute = () => {
     switch (user?.role) {
@@ -19,6 +23,92 @@ export const Header = () => {
       default:
         return ROUTES.HOME;
     }
+  };
+
+  const getProfileMenuItems = (): MenuProps['items'] => {
+    const commonItems: MenuProps['items'] = [
+      {
+        key: 'dashboard',
+        label: 'Dashboard',
+        icon: <DashboardOutlined />,
+        onClick: () => navigate(getDashboardRoute()),
+      },
+    ];
+
+    let roleSpecificItems: MenuProps['items'] = [];
+
+    switch (user?.role) {
+      case UserRole.BUYER:
+        roleSpecificItems = [
+          {
+            key: 'orders',
+            label: 'Đơn hàng',
+            icon: <ShoppingOutlined />,
+            onClick: () => navigate(ROUTES.BUYER_ORDERS),
+          },
+          {
+            key: 'wishlist',
+            label: 'Yêu thích',
+            icon: <HeartOutlined />,
+            onClick: () => navigate('/buyer/wishlist'),
+          },
+          {
+            key: 'disputes',
+            label: 'Tranh chấp',
+            icon: <WarningOutlined />,
+            onClick: () => navigate('/buyer/disputes'),
+          },
+        ];
+        break;
+
+      case UserRole.SELLER:
+        roleSpecificItems = [       
+          {
+            key: 'orders',
+            label: 'Đơn hàng',
+            icon: <ShoppingOutlined />,
+            onClick: () => navigate(ROUTES.SELLER_ORDERS),
+          },
+          {
+            key: 'create',
+            label: 'Đăng tin mới',
+            icon: <FileTextOutlined />,
+            onClick: () => navigate(ROUTES.SELLER_CREATE_LISTING),
+          },
+        ];
+        break;
+
+      case UserRole.INSPECTOR:
+        roleSpecificItems = [
+          {
+            key: 'listings',
+            label: 'Listings kiểm định',
+            icon: <InboxOutlined />,
+            onClick: () => navigate('/inspector/listings'),
+          },
+        ];
+        break;
+
+      case UserRole.ADMIN:
+        // Admin has dedicated layout with sidebar, so minimal items here
+        roleSpecificItems = [];
+        break;
+    }
+
+    return [
+      ...commonItems,
+      ...roleSpecificItems,
+      {
+        type: 'divider',
+      },
+      {
+        key: 'logout',
+        label: 'Đăng xuất',
+        icon: <LogoutOutlined />,
+        danger: true,
+        onClick: logout,
+      },
+    ];
   };
 
   return (
@@ -58,39 +148,27 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-              <Link
-                to={getDashboardRoute()}
-                className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              >
-                <span className="material-symbols-outlined">dashboard</span>
-                <span className="text-sm font-medium">Dashboard</span>
-              </Link>
-              <div className="flex items-center gap-2">
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold">{user?.fullName}</p>
-                  <p className="text-xs text-slate-500">{user?.role}</p>
-                </div>
-                {user?.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.fullName}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-green-200"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-green-600">person</span>
+             
+              <Dropdown menu={{ items: getProfileMenuItems() }} trigger={['click']} placement="bottomRight">
+                <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors">
+                  {user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.fullName}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-green-200"
+                    />
+                  ) : (
+                    <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#10b981' }}>
+                      {user?.fullName?.[0]}
+                    </Avatar>
+                  )}
+                  <div className="text-left hidden sm:block">
+                    <p className="text-sm font-semibold mb-0!">{user?.fullName}</p>
+                    <p className="text-xs text-slate-500 mb-0!">{user?.role}</p>
                   </div>
-                )}
-                <button
-                  onClick={logout}
-                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                  title="Đăng xuất"
-                >
-                  <span className="material-symbols-outlined text-slate-600 dark:text-slate-400">
-                    logout
-                  </span>
-                </button>
-              </div>
+                  <DownOutlined style={{ fontSize: '10px' }} />
+                </div>
+              </Dropdown>
             </>
           ) : (
             <>

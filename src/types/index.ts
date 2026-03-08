@@ -60,6 +60,7 @@ export interface User {
   fullName: string;
   avatarUrl?: string;
   isActive: boolean;
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED'; // For seller approval
   ratingAvg: number;
   ratingCount: number;
   createdAt: string;
@@ -98,13 +99,17 @@ export interface ListingMedia {
 export interface Listing {
   id: number;
   sellerId: number;
+  sellerName?: string;
   title: string;
   description: string;
   usageHistory?: string;
   locationText?: string;
   brandId?: number;
+  brandName?: string;
   categoryId?: number;
+  categoryName?: string;
   sizeOptionId?: number;
+  sizeLabel?: string;
   priceAmount: number;
   currency: string;
   conditionNote?: string;
@@ -121,6 +126,7 @@ export interface Listing {
   category?: BikeCategory;
   sizeOption?: SizeOption;
   media?: ListingMedia[];
+  inspection?: Inspection;
 }
 
 export interface Inspection {
@@ -158,6 +164,12 @@ export interface Order {
   buyer?: User;
   seller?: User;
   payments?: Payment[];
+  // Convenience fields from backend
+  listingTitle?: string;
+  buyerName?: string;
+  sellerName?: string;
+  totalAmount?: number;
+  remainingAmount?: number;
 }
 
 export interface Payment {
@@ -213,6 +225,12 @@ export interface RegisterRequest {
   role: UserRole;
 }
 
+export interface CreateListingMediaRequest {
+  type: 'IMAGE' | 'VIDEO';
+  url: string;
+  sortOrder: number;
+}
+
 export interface CreateListingRequest {
   title: string;
   description: string;
@@ -224,7 +242,8 @@ export interface CreateListingRequest {
   priceAmount: number;
   conditionNote?: string;
   yearModel?: number;
-  mediaUrls?: string[];
+  media?: CreateListingMediaRequest[];
+  status?: 'DRAFT' | 'PENDING_APPROVAL';
 }
 
 export interface CreateOrderRequest {
@@ -234,8 +253,7 @@ export interface CreateOrderRequest {
 }
 
 export interface CreateInspectionRequest {
-  listingId: number;
   summary: string;
-  checklistJson?: Record<string, any>;
+  checklistJson?: string;
   reportUrl?: string;
 }

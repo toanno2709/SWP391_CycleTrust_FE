@@ -7,6 +7,7 @@ import { listingService } from '../../services/listing';
 import { useCatalogStore } from '../../store/catalog';
 import { Input, Textarea, Button, Card } from '../../components/ui';
 import { ImageUploader } from '../../components/listing/ImageUploader';
+import { VideoUploader } from '../../components/listing/VideoUploader';
 import { useForm } from '../../hooks/useForm';
 import { useEffect } from 'react';
 
@@ -15,6 +16,7 @@ export const CreateListingPage = () => {
   const [loading, setLoading] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const { brands, categories, sizes, fetchAll } = useCatalogStore();
 
   const { values, errors, handleChange } = useForm({
@@ -42,6 +44,18 @@ export const CreateListingPage = () => {
 
     setSavingDraft(true);
     try {
+      // Build media array
+      const media = [
+        ...mediaUrls.map((url, index) => ({
+          type: 'IMAGE' as const,
+          url,
+          sortOrder: index,
+        })),
+        ...(videoUrl
+          ? [{ type: 'VIDEO' as const, url: videoUrl, sortOrder: mediaUrls.length }]
+          : []),
+      ];
+
       await listingService.create({
         title: values.title,
         description: values.description,
@@ -53,7 +67,7 @@ export const CreateListingPage = () => {
         priceAmount: values.priceAmount ? Number(values.priceAmount) : 0,
         conditionNote: values.conditionNote || undefined,
         yearModel: values.yearModel ? Number(values.yearModel) : undefined,
-        mediaUrls,
+        media,
         status: 'DRAFT',
       });
       
@@ -76,6 +90,18 @@ export const CreateListingPage = () => {
 
     setLoading(true);
     try {
+      // Build media array
+      const media = [
+        ...mediaUrls.map((url, index) => ({
+          type: 'IMAGE' as const,
+          url,
+          sortOrder: index,
+        })),
+        ...(videoUrl
+          ? [{ type: 'VIDEO' as const, url: videoUrl, sortOrder: mediaUrls.length }]
+          : []),
+      ];
+
       await listingService.create({
         title: values.title,
         description: values.description,
@@ -87,7 +113,7 @@ export const CreateListingPage = () => {
         priceAmount: Number(values.priceAmount),
         conditionNote: values.conditionNote || undefined,
         yearModel: values.yearModel ? Number(values.yearModel) : undefined,
-        mediaUrls,
+        media,
         status: 'PENDING_APPROVAL',
       });
       
@@ -114,6 +140,14 @@ export const CreateListingPage = () => {
           <Card>
             <h2 className="text-2xl font-bold mb-6">Hình ảnh</h2>
             <ImageUploader onUpload={setMediaUrls} maxFiles={10} />
+          </Card>
+
+          <Card>
+            <h2 className="text-2xl font-bold mb-6">Video (tùy chọn)</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Tải lên video giới thiệu xe đạp (tối đa 100MB)
+            </p>
+            <VideoUploader onUpload={setVideoUrl} />
           </Card>
 
           <Card>

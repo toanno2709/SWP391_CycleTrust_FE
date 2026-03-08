@@ -48,9 +48,34 @@ export const RegisterPage = () => {
         fullName: values.fullName,
         role: values.role,
       });
+
+      // If registering as SELLER, they need admin approval
+      if (values.role === UserRole.SELLER) {
+        toast.success('Đăng ký thành công! Tài khoản của bạn đang chờ admin phê duyệt.', {
+          duration: 5000,
+        });
+        navigate(ROUTES.LOGIN);
+        return;
+      }
+
+      // For other roles (BUYER), login immediately
       setUser(response.user);
       toast.success('Đăng ký thành công!');
-      navigate(ROUTES.HOME);
+      
+      // Navigate based on role
+      switch (response.user.role) {
+        case UserRole.ADMIN:
+          navigate(ROUTES.ADMIN_DASHBOARD);
+          break;
+        case UserRole.BUYER:
+          navigate(ROUTES.BUYER_DASHBOARD);
+          break;
+        case UserRole.INSPECTOR:
+          navigate(ROUTES.INSPECTOR_DASHBOARD);
+          break;
+        default:
+          navigate(ROUTES.HOME);
+      }
     } catch (error: any) {
       const errorMsg = error.message || 'Đăng ký thất bại';
       toast.error(errorMsg);

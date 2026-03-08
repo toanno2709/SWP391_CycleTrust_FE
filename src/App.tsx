@@ -13,14 +13,32 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 
 import { BuyerDashboard } from './pages/buyer/BuyerDashboard';
+import BuyerOrdersPage from './pages/buyer/BuyerOrdersPage';
+import BuyerOrderDetailPage from './pages/buyer/BuyerOrderDetailPage';
+import WishlistPage from './pages/buyer/WishlistPage';
+import DisputesListPage from './pages/buyer/DisputesListPage';
+import DisputeDetailPage from './pages/buyer/DisputeDetailPage';
 
 import { SellerDashboard } from './pages/seller/SellerDashboard';
 import { CreateListingPage } from './pages/seller/CreateListingPage';
+import { EditListingPage } from './pages/seller/EditListingPage';
+import { SellerOrdersPage } from './pages/seller/SellerOrdersPage';
+import SellerOrderDetailPage from './pages/seller/SellerOrderDetailPage';
+
+import { InspectorDashboard } from './pages/inspector/InspectorDashboard';
+import { InspectorListingsPage } from './pages/inspector/InspectorListingsPage';
+import { InspectionFormPage } from './pages/inspector/InspectionFormPage';
 
 import { AdminLayout } from './layouts/AdminLayout';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminListingsPage } from './pages/admin/AdminListingsPage';
+import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminCatalogPage } from './pages/admin/AdminCatalogPage';
+import AdminTransactionsPage from './pages/admin/AdminTransactionsPage';
+import AdminDisputesPage from './pages/admin/AdminDisputesPage';
+import AdminDepositPolicyPage from './pages/admin/AdminDepositPolicyPage';
+import AdminOrderDetailPage from './pages/admin/AdminOrderDetailPage';
+import { VNPayReturnPage } from './pages/payment/VNPayReturnPage';
 
 import { Loading } from './components/ui';
 
@@ -44,6 +62,9 @@ function App() {
         <Route path={ROUTES.LISTING_DETAIL} element={<ListingDetailPage />} />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        
+        {/* VNPay Payment Return */}
+        <Route path="/payment/vnpay-return" element={<VNPayReturnPage />} />
 
         <Route
           path={ROUTES.BUYER_DASHBOARD}
@@ -57,11 +78,59 @@ function App() {
           path={ROUTES.BUYER_ORDERS}
           element={
             <ProtectedRoute allowedRoles={[UserRole.BUYER]}>
-              <BuyerDashboard />
+              <BuyerOrdersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buyer/orders/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.BUYER]}>
+              <BuyerOrderDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buyer/wishlist"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.BUYER]}>
+              <WishlistPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buyer/disputes"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.BUYER]}>
+              <DisputesListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buyer/disputes/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.BUYER, UserRole.ADMIN, UserRole.INSPECTOR]}>
+              <DisputeDetailPage />
             </ProtectedRoute>
           }
         />
 
+        <Route
+          path={ROUTES.SELLER_ORDERS}
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.SELLER]}>
+              <SellerOrdersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/seller/orders/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.SELLER]}>
+              <SellerOrderDetailPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path={ROUTES.SELLER_DASHBOARD}
           element={
@@ -83,6 +152,39 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={[UserRole.SELLER]}>
               <CreateListingPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/seller/listings/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.SELLER]}>
+              <EditListingPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path={ROUTES.INSPECTOR_DASHBOARD}
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.INSPECTOR]}>
+              <InspectorDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.INSPECTOR_LISTINGS}
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.INSPECTOR]}>
+              <InspectorListingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.INSPECTOR_INSPECTION}
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.INSPECTOR]}>
+              <InspectionFormPage />
             </ProtectedRoute>
           }
         />
@@ -108,7 +210,67 @@ function App() {
           }
         />
         <Route
-          path="/admin/catalog"
+          path={ROUTES.ADMIN_USERS}
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminLayout>
+                <AdminUsersPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/transactions"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminLayout>
+                <AdminTransactionsPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/disputes"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.INSPECTOR]}>
+              <AdminLayout>
+                <AdminDisputesPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/disputes/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.INSPECTOR]}>
+              <AdminLayout>
+                <DisputeDetailPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/deposit-policy"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminLayout>
+                <AdminDepositPolicyPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders/:id"
+          element={
+            <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+              <AdminLayout>
+                <AdminOrderDetailPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={ROUTES.ADMIN_CATALOG}
           element={
             <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
               <AdminLayout>
