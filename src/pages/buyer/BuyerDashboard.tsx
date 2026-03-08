@@ -31,7 +31,7 @@ export const BuyerDashboard = () => {
       <div className="max-w-7xl mx-auto px-6 py-12">
         <h1 className="text-4xl font-black mb-8">Dashboard Người mua</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
@@ -73,6 +73,43 @@ export const BuyerDashboard = () => {
           </Card>
         </div>
 
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <Link to="/buyer/wishlist">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-red-600 text-2xl">favorite</span>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold">Danh sách yêu thích</p>
+                    <p className="text-sm text-slate-500">Xem xe đã lưu</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-400">arrow_forward</span>
+              </div>
+            </Card>
+          </Link>
+
+          <Link to="/buyer/disputes">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-orange-50 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-orange-600 text-2xl">report_problem</span>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold">Tranh chấp của tôi</p>
+                    <p className="text-sm text-slate-500">Quản lý khiếu nại</p>
+                  </div>
+                </div>
+                <span className="material-symbols-outlined text-slate-400">arrow_forward</span>
+              </div>
+            </Card>
+          </Link>
+        </div>
+
         <Card>
           <h2 className="text-2xl font-bold mb-6">Đơn hàng gần đây</h2>
           
@@ -112,7 +149,7 @@ export const BuyerDashboard = () => {
                     </div>
                   </div>
                   <Link
-                    to={`/buyer/orders`}
+                    to={`/buyer/orders/${order.id}`}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     Chi tiết
