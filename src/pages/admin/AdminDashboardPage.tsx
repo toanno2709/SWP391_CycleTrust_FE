@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, Row, Col, Statistic, Select, DatePicker, Space } from 'antd';
 import { 
   ShoppingOutlined, 
@@ -24,47 +24,72 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { analyticsService, type DashboardData } from '../../services/analytics';
-import toast from 'react-hot-toast';
-import { format } from 'date-fns';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-export const AdminDashboard = () => {
+// Mock data - sẽ thay thế bằng API call sau
+const generateMockData = () => {
+  const revenueData = Array.from({ length: 12 }, (_, i) => ({
+    month: `Tháng ${i + 1}`,
+    revenue: Math.floor(Math.random() * 50000000) + 20000000,
+    orders: Math.floor(Math.random() * 100) + 20,
+  }));
+
+  const orderStatusData = [
+    { name: 'Hoàn thành', value: 145, color: '#52c41a' },
+    { name: 'Đang giao', value: 32, color: '#1890ff' },
+    { name: 'Chờ xác nhận', value: 18, color: '#faad14' },
+    { name: 'Đã hủy', value: 12, color: '#ff4d4f' },
+    { name: 'Tranh chấp', value: 5, color: '#fa8c16' },
+  ];
+
+  const userGrowthData = Array.from({ length: 12 }, (_, i) => ({
+    month: `T${i + 1}`,
+    buyers: Math.floor(Math.random() * 50) + 10,
+    sellers: Math.floor(Math.random() * 20) + 5,
+  }));
+
+  const topListingsData = [
+    { name: 'Honda Wave RSX', sales: 15, revenue: 45000000 },
+    { name: 'Yamaha Exciter', sales: 12, revenue: 38000000 },
+    { name: 'Honda Air Blade', sales: 10, revenue: 32000000 },
+    { name: 'Yamaha Sirius', sales: 8, revenue: 24000000 },
+    { name: 'Suzuki Raider', sales: 6, revenue: 18000000 },
+  ];
+
+  const recentActivities = [
+    { id: 1, type: 'order', message: 'Đơn hàng #1234 đã hoàn thành', time: '5 phút trước' },
+    { id: 2, type: 'user', message: 'User mới đăng ký: nguyen.van.a@email.com', time: '15 phút trước' },
+    { id: 3, type: 'listing', message: 'Listing mới: Honda Winner X', time: '30 phút trước' },
+    { id: 4, type: 'dispute', message: 'Dispute mới từ đơn hàng #1220', time: '1 giờ trước' },
+    { id: 5, type: 'order', message: 'Đơn hàng #1233 được tạo', time: '2 giờ trước' },
+  ];
+
+  return {
+    revenueData,
+    orderStatusData,
+    userGrowthData,
+    topListingsData,
+    recentActivities,
+  };
+};
+
+export default function AdminDashboardPage() {
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
   const [dateRange, setDateRange] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [period, dateRange]);
+  const mockData = generateMockData();
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
-      const fromDate = dateRange?.[0] ? format(dateRange[0].toDate(), 'yyyy-MM-dd') : undefined;
-      const toDate = dateRange?.[1] ? format(dateRange[1].toDate(), 'yyyy-MM-dd') : undefined;
-      
-      const data = await analyticsService.getDashboard(period, fromDate, toDate);
-      setDashboardData(data);
-    } catch (error: any) {
-      toast.error(error.message || 'Lỗi khi tải dữ liệu dashboard');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Summary statistics
+  const totalRevenue = 450000000;
+  const totalOrders = 212;
+  const totalUsers = 847;
+  const averageOrderValue = totalRevenue / totalOrders;
 
-  if (!dashboardData) {
-    return (
-      <div className="p-6 flex justify-center items-center min-h-screen">
-        <div className="text-xl">Đang tải dữ liệu...</div>
-      </div>
-    );
-  }
-
-  const { summary, revenueData, orderStatusData, userGrowthData, topListings, recentActivities } = dashboardData;
+  const revenueGrowth = 12.5; // %
+  const orderGrowth = 8.3; // %
+  const userGrowth = 15.7; // %
 
   return (
     <div className="p-6">
@@ -95,25 +120,15 @@ export const AdminDashboard = () => {
           <Card>
             <Statistic
               title="Tổng doanh thu"
-              value={summary.totalRevenue}
+              value={totalRevenue}
               suffix="VND"
               prefix={<DollarOutlined />}
               valueStyle={{ color: '#3f8600', fontSize: '20px' }}
-              loading={loading}
             />
             <div className="flex items-center gap-1 mt-2 text-sm">
-              {summary.revenueGrowth >= 0 ? (
-                <>
-                  <RiseOutlined style={{ color: '#3f8600' }} />
-                  <span style={{ color: '#3f8600' }}>+{summary.revenueGrowth}%</span>
-                </>
-              ) : (
-                <>
-                  <FallOutlined style={{ color: '#cf1322' }} />
-                  <span style={{ color: '#cf1322' }}>{summary.revenueGrowth}%</span>
-                </>
-              )}
-              <span className="text-gray-500">so với kỳ trước</span>
+              <RiseOutlined style={{ color: '#3f8600' }} />
+              <span style={{ color: '#3f8600' }}>+{revenueGrowth}%</span>
+              <span className="text-gray-500">so với tháng trước</span>
             </div>
           </Card>
         </Col>
@@ -121,24 +136,14 @@ export const AdminDashboard = () => {
           <Card>
             <Statistic
               title="Tổng đơn hàng"
-              value={summary.totalOrders}
+              value={totalOrders}
               prefix={<ShoppingOutlined />}
               valueStyle={{ color: '#1890ff', fontSize: '20px' }}
-              loading={loading}
             />
             <div className="flex items-center gap-1 mt-2 text-sm">
-              {summary.orderGrowth >= 0 ? (
-                <>
-                  <RiseOutlined style={{ color: '#3f8600' }} />
-                  <span style={{ color: '#3f8600' }}>+{summary.orderGrowth}%</span>
-                </>
-              ) : (
-                <>
-                  <FallOutlined style={{ color: '#cf1322' }} />
-                  <span style={{ color: '#cf1322' }}>{summary.orderGrowth}%</span>
-                </>
-              )}
-              <span className="text-gray-500">so với kỳ trước</span>
+              <RiseOutlined style={{ color: '#3f8600' }} />
+              <span style={{ color: '#3f8600' }}>+{orderGrowth}%</span>
+              <span className="text-gray-500">so với tháng trước</span>
             </div>
           </Card>
         </Col>
@@ -146,24 +151,14 @@ export const AdminDashboard = () => {
           <Card>
             <Statistic
               title="Tổng người dùng"
-              value={summary.totalUsers}
+              value={totalUsers}
               prefix={<UserOutlined />}
               valueStyle={{ color: '#722ed1', fontSize: '20px' }}
-              loading={loading}
             />
             <div className="flex items-center gap-1 mt-2 text-sm">
-              {summary.userGrowth >= 0 ? (
-                <>
-                  <RiseOutlined style={{ color: '#3f8600' }} />
-                  <span style={{ color: '#3f8600' }}>+{summary.userGrowth}%</span>
-                </>
-              ) : (
-                <>
-                  <FallOutlined style={{ color: '#cf1322' }} />
-                  <span style={{ color: '#cf1322' }}>{summary.userGrowth}%</span>
-                </>
-              )}
-              <span className="text-gray-500">so với kỳ trước</span>
+              <RiseOutlined style={{ color: '#3f8600' }} />
+              <span style={{ color: '#3f8600' }}>+{userGrowth}%</span>
+              <span className="text-gray-500">so với tháng trước</span>
             </div>
           </Card>
         </Col>
@@ -171,11 +166,15 @@ export const AdminDashboard = () => {
           <Card>
             <Statistic
               title="Giá trị đơn TB"
-              value={summary.averageOrderValue}
+              value={averageOrderValue}
               suffix="VND"
               valueStyle={{ color: '#faad14', fontSize: '20px' }}
-              loading={loading}
             />
+            <div className="flex items-center gap-1 mt-2 text-sm">
+              <FallOutlined style={{ color: '#cf1322' }} />
+              <span style={{ color: '#cf1322' }}>-2.3%</span>
+              <span className="text-gray-500">so với tháng trước</span>
+            </div>
           </Card>
         </Col>
       </Row>
@@ -185,7 +184,7 @@ export const AdminDashboard = () => {
         <Col xs={24} lg={16}>
           <Card title="Biểu đồ Doanh thu" className="h-full">
             <ResponsiveContainer width="100%" height={300}>
-              <AreaChart data={revenueData}>
+              <AreaChart data={mockData.revenueData}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#1890ff" stopOpacity={0.8} />
@@ -193,7 +192,7 @@ export const AdminDashboard = () => {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
+                <XAxis dataKey="month" />
                 <YAxis 
                   tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
                 />
@@ -218,7 +217,7 @@ export const AdminDashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
-                  data={orderStatusData}
+                  data={mockData.orderStatusData}
                   cx="50%"
                   cy="50%"
                   labelLine={false}
@@ -227,7 +226,7 @@ export const AdminDashboard = () => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {orderStatusData.map((entry, index) => (
+                  {mockData.orderStatusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -243,9 +242,9 @@ export const AdminDashboard = () => {
         <Col xs={24} lg={12}>
           <Card title="Tăng trưởng Người dùng">
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={userGrowthData}>
+              <LineChart data={mockData.userGrowthData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="period" />
+                <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
@@ -272,7 +271,7 @@ export const AdminDashboard = () => {
         <Col xs={24} lg={12}>
           <Card title="Top Listings bán chạy">
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={topListings} layout="vertical">
+              <BarChart data={mockData.topListingsData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
                 <YAxis dataKey="name" type="category" width={120} />
@@ -295,7 +294,7 @@ export const AdminDashboard = () => {
         <Col xs={24}>
           <Card title="Hoạt động gần đây">
             <div className="space-y-3">
-              {recentActivities.map((activity) => (
+              {mockData.recentActivities.map((activity) => (
                 <div 
                   key={activity.id} 
                   className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -318,4 +317,4 @@ export const AdminDashboard = () => {
       </Row>
     </div>
   );
-};
+}

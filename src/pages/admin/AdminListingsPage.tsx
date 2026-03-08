@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Table, Tag, Button, Modal, Input, message, Space, Tabs } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined } from '@ant-design/icons';
+import { Table, Tag, Button, Modal, Input, message, Tabs, Dropdown } from 'antd';
+import type { MenuProps } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { listingService } from '../../services/listing';
 import type { Listing, ListingStatus } from '../../types';
 import { formatCurrency, formatDateTime } from '../../utils/format';
@@ -16,7 +17,7 @@ export const AdminListingsPage = () => {
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [rejectReason, setRejectReason] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>('PENDING_APPROVAL');
+  const [activeTab, setActiveTab] = useState<string>('ALL');
 
   const fetchListings = async (status?: ListingStatus) => {
     setLoading(true);
@@ -31,7 +32,8 @@ export const AdminListingsPage = () => {
   };
 
   useEffect(() => {
-    fetchListings(activeTab as ListingStatus);
+    const status = activeTab === 'ALL' ? undefined : (activeTab as ListingStatus);
+    fetchListings(status);
   }, [activeTab]);
 
   const handleApprove = async (listing: Listing) => {
@@ -45,7 +47,8 @@ export const AdminListingsPage = () => {
         try {
           await listingService.approve(listing.id);
           message.success('Đã duyệt listing thành công');
-          fetchListings(activeTab as ListingStatus);
+          const status = activeTab === 'ALL' ? undefined : (activeTab as ListingStatus);
+          fetchListings(status);
         } catch (error: any) {
           message.error(error.message || 'Duyệt listing thất bại');
         } finally {
@@ -74,7 +77,8 @@ export const AdminListingsPage = () => {
       setRejectModalOpen(false);
       setSelectedListing(null);
       setRejectReason('');
-      fetchListings(activeTab as ListingStatus);
+      const status = activeTab === 'ALL' ? undefined : (activeTab as ListingStatus);
+      fetchListings(status);
     } catch (error: any) {
       message.error(error.message || 'Từ chối listing thất bại');
     } finally {
@@ -154,37 +158,41 @@ export const AdminListingsPage = () => {
     {
       title: 'Thao tác',
       key: 'action',
-      render: (_: any, record: Listing) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EyeOutlined />}
-            onClick={() => window.open(`/listings/${record.id}`, '_blank')}
-          >
-            Xem
-          </Button>
-          {record.status === 'PENDING_APPROVAL' && (
-            <>
-              <Button
-                type="primary"
-                icon={<CheckCircleOutlined />}
-                onClick={() => handleApprove(record)}
-                loading={actionLoading}
-              >
-                Duyệt
-              </Button>
-              <Button
-                danger
-                icon={<CloseCircleOutlined />}
-                onClick={() => handleReject(record)}
-                loading={actionLoading}
-              >
-                Từ chối
-              </Button>
-            </>
-          )}
-        </Space>
-      ),
+      width: 80,
+      render: (_: any, record: Listing) => {
+        const menuItems: MenuProps['items'] = [
+          {
+            key: 'view',
+            label: 'Xem chi tiết',
+            icon: <EyeOutlined />,
+            onClick: () => window.open(`/listings/${record.id}`, '_blank')
+          },
+        ];
+
+        if (record.status === 'PENDING_APPROVAL') {
+          menuItems.push(
+            {
+              key: 'approve',
+              label: 'Duyệt',
+              icon: <CheckCircleOutlined />,
+              onClick: () => handleApprove(record)
+            },
+            {
+              key: 'reject',
+              label: 'Từ chối',
+              icon: <CloseCircleOutlined />,
+              danger: true,
+              onClick: () => handleReject(record)
+            }
+          );
+        }
+
+        return (
+          <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+            <Button type="text" icon={<MoreOutlined />} loading={actionLoading} />
+          </Dropdown>
+        );
+      },
     },
   ];
 
@@ -193,6 +201,7 @@ export const AdminListingsPage = () => {
       <h1 className="text-3xl font-bold mb-6">Quản lý Listings</h1>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
+        <TabPane tab="Tất cả" key="ALL" />
         <TabPane tab="Chờ duyệt" key="PENDING_APPROVAL" />
         <TabPane tab="Đã duyệt" key="APPROVED" />
         <TabPane tab="Đã xác thực" key="VERIFIED" />
