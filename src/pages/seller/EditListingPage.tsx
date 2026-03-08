@@ -7,8 +7,8 @@ import { listingService } from '../../services/listing';
 import { useCatalogStore } from '../../store/catalog';
 import { Input, Textarea, Button, Card, Loading } from '../../components/ui';
 import { ImageUploader } from '../../components/listing/ImageUploader';
+import { VideoUploader } from '../../components/listing/VideoUploader';
 import { useForm } from '../../hooks/useForm';
-import type { Listing } from '../../types';
 
 export const EditListingPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +17,7 @@ export const EditListingPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const { brands, categories, sizes, fetchAll } = useCatalogStore();
 
   const { values, errors, handleChange, setValues } = useForm({
@@ -63,7 +64,12 @@ export const EditListingPage = () => {
           yearModel: data.yearModel?.toString() || '',
         });
         
-        setMediaUrls(data.media?.map(m => m.url) || []);
+        // Load images and video
+        const images = data.media?.filter(m => m.type === 'IMAGE').map(m => m.url) || [];
+        const video = data.media?.find(m => m.type === 'VIDEO');
+        
+        setMediaUrls(images);
+        setVideoUrl(video?.url || null);
       } catch (error: any) {
         toast.error(error.message || 'Không thể tải listing');
         navigate('/seller/listings');
@@ -85,6 +91,18 @@ export const EditListingPage = () => {
 
     setSavingDraft(true);
     try {
+      // Build media array
+      const media = [
+        ...mediaUrls.map((url, index) => ({
+          type: 'IMAGE' as const,
+          url,
+          sortOrder: index,
+        })),
+        ...(videoUrl
+          ? [{ type: 'VIDEO' as const, url: videoUrl, sortOrder: mediaUrls.length }]
+          : []),
+      ];
+
       await listingService.update(Number(id), {
         title: values.title,
         description: values.description,
@@ -96,7 +114,7 @@ export const EditListingPage = () => {
         priceAmount: values.priceAmount ? Number(values.priceAmount) : 0,
         conditionNote: values.conditionNote || undefined,
         yearModel: values.yearModel ? Number(values.yearModel) : undefined,
-        mediaUrls,
+        media,
         status: 'DRAFT',
       });
       
@@ -121,6 +139,18 @@ export const EditListingPage = () => {
 
     setSubmitting(true);
     try {
+      // Build media array
+      const media = [
+        ...mediaUrls.map((url, index) => ({
+          type: 'IMAGE' as const,
+          url,
+          sortOrder: index,
+        })),
+        ...(videoUrl
+          ? [{ type: 'VIDEO' as const, url: videoUrl, sortOrder: mediaUrls.length }]
+          : []),
+      ];
+
       await listingService.update(Number(id), {
         title: values.title,
         description: values.description,
@@ -132,7 +162,7 @@ export const EditListingPage = () => {
         priceAmount: Number(values.priceAmount),
         conditionNote: values.conditionNote || undefined,
         yearModel: values.yearModel ? Number(values.yearModel) : undefined,
-        mediaUrls,
+        media,
         status: 'PENDING_APPROVAL',
       });
       
@@ -174,6 +204,14 @@ export const EditListingPage = () => {
                 ))}
               </div>
             )}
+          </Card>
+
+          <Card>
+            <h2 className="text-2xl font-bold mb-6">Video (tùy chọn)</h2>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+              Tải lên video giới thiệu xe đạp (tối đa 100MB)
+            </p>
+            <VideoUploader onUpload={setVideoUrl} existingUrl={videoUrl || undefined} />
           </Card>
 
           <Card>
