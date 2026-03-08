@@ -8,7 +8,18 @@ import type {
 
 export const orderService = {
   async getMyOrders(): Promise<Order[]> {
-    const response = await apiClient.get<ApiResponse<Order[]>>('/orders/my');
+    const response = await apiClient.get<ApiResponse<Order[]>>('/orders');
+    return response.data || [];
+  },
+
+  async getAllForAdmin(filters?: {
+    status?: string;
+    fromDate?: string;
+    toDate?: string;
+  }): Promise<Order[]> {
+    const response = await apiClient.get<ApiResponse<Order[]>>('/orders/admin/all', {
+      params: filters
+    });
     return response.data || [];
   },
 

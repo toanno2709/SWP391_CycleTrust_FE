@@ -31,7 +31,11 @@ class ApiClient {
           localStorage.removeItem(TOKEN_KEY);
           window.location.href = '/login';
         }
-        return Promise.reject(error);
+        
+        const message = error.response?.data?.message || error.message || 'An error occurred';
+        const enhancedError = new Error(message);
+        (enhancedError as any).originalError = error;
+        return Promise.reject(enhancedError);
       }
     );
   }
@@ -48,6 +52,11 @@ class ApiClient {
 
   async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
+    return response.data;
+  }
+
+  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }
 
