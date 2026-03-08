@@ -3,12 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '../../layouts/MainLayout';
 import { listingService } from '../../services/listing';
 import { orderService } from '../../services/order';
+import { wishlistService } from '../../services/wishlist';
 import { useAuthStore } from '../../store/auth';
 import type { Listing } from '../../types';
 import { UserRole } from '../../types';
 import { formatCurrency, formatDateTime } from '../../utils/format';
 import { LISTING_STATUS_LABELS } from '../../config/constants';
 import { Button, Loading, Modal } from '../../components/ui';
+import { toast } from 'react-hot-toast';
+import { 
+  CHECKLIST_ITEMS,
+  CONDITION_LABELS,
+  CONDITION_COLORS,
+  type Checklist 
+} from '../../config/inspectionChecklist';
 
 export const ListingDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,6 +28,8 @@ export const ListingDetailPage = () => {
   const [useDeposit, setUseDeposit] = useState(true);
   const [creating, setCreating] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [inWishlist, setInWishlist] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -27,6 +37,16 @@ export const ListingDetailPage = () => {
       try {
         const data = await listingService.getById(Number(id));
         setListing(data);
+        
+        // Check if in wishlist (only for buyers)
+        if (user?.role === UserRole.BUYER) {
+          try {
+            const isInWishlist = await wishlistService.check(Number(id));
+            setInWishlist(isInWishlist);
+          } catch (error) {
+            // Ignore wishlist check error
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch listing:', error);
       } finally {
@@ -35,23 +55,70 @@ export const ListingDetailPage = () => {
     };
 
     fetchListing();
-  }, [id]);
+  }, [id, user]);
 
   const handleCreateOrder = async () => {
     if (!listing) return;
     setCreating(true);
     try {
-      await orderService.create({
+      const order = await orderService.create({
         listingId: listing.id,
         useDeposit,
       });
-      navigate(`/buyer/orders`);
+      
+      toast.success('Đã tạo đơn hàng thành công!');
+      setOrderModalOpen(false);
+      
+      // Redirect to payment
+      if (useDeposit) {
+        // Pay deposit
+        navigate(`/buyer/orders/${order.id}`);
+      } else {
+        // Pay full immediately - redirect to VNPay
+        try {
+          const { paymentUrl } = await orderService.payFull(order.id);
+          window.location.href = paymentUrl;
+        } catch (error: any) {
+          toast.error(error.message || 'Không thể khởi tạo thanh toán');
+          navigate(`/buyer/orders/${order.id}`);
+        }
+      }
     } catch (error: any) {
-      alert(error.message || 'Tạo đơn hàng thất bại');
+      toast.error(error.message || 'Tạo đơn hàng thất bại');
     } finally {
       setCreating(false);
     }
   };
+
+  const handleToggleWishlist = async () => {
+    if (!listing || !user) {
+      toast.error('Vui lòng đăng nhập');
+      return;
+    }
+    
+    if (user.role !== UserRole.BUYER) {
+      toast.error('Chỉ người mua mới có thể lưu xe yêu thích');
+      return;
+    }
+
+    setWishlistLoading(true);
+    try {
+      if (inWishlist) {
+        await wishlistService.remove(listing.id);
+        setInWishlist(false);
+        toast.success('Đã xóa khỏi danh sách yêu thích');
+      } else {
+        await wishlistService.add(listing.id);
+        setInWishlist(true);
+        toast.success('Đã thêm vào danh sách yêu thích');
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Có lỗi xảy ra');
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
 
   if (loading) return <MainLayout><Loading fullScreen /></MainLayout>;
   if (!listing) return <MainLayout><div className="text-center py-16">Không tìm thấy listing</div></MainLayout>;
@@ -113,17 +180,31 @@ export const ListingDetailPage = () => {
               </div>
             </div>
 
-            <div className="py-6 border-y border-slate-200 dark:border-slate-800">
-              <div className="text-4xl font-black text-green-600 mb-2">
-                {formatCurrency(listing.priceAmount, listing.currency)}
+            {canBuy && (
+              <div className="flex gap-3">
+                <Button
+                  size="lg"
+                  className="flex-1"
+                  onClick={() => setOrderModalOpen(true)}
+                >
+                  Đặt mua ngay
+                </Button>
+                <button
+                  onClick={handleToggleWishlist}
+                  disabled={wishlistLoading}
+                  className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                    inWishlist
+                      ? 'bg-red-50 border-red-500 text-red-500'
+                      : 'bg-white border-slate-300 text-slate-600 hover:border-red-500 hover:text-red-500'
+                  } disabled:opacity-50`}
+                  title={inWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
+                >
+                  <span className="material-symbols-outlined">
+                    {inWishlist ? 'favorite' : 'favorite_border'}
+                  </span>
+                </button>
               </div>
-              {listing.locationText && (
-                <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
-                  <span className="material-symbols-outlined">location_on</span>
-                  <span>{listing.locationText}</span>
-                </div>
-              )}
-            </div>
+            )}
 
             {listing.seller && (
               <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
@@ -151,16 +232,6 @@ export const ListingDetailPage = () => {
               </div>
             )}
 
-            {canBuy && (
-              <Button
-                size="lg"
-                className="w-full"
-                onClick={() => setOrderModalOpen(true)}
-              >
-                Đặt mua ngay
-              </Button>
-            )}
-
             <div className="space-y-4">
               <h2 className="text-2xl font-bold">Mô tả</h2>
               <p className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
@@ -174,6 +245,76 @@ export const ListingDetailPage = () => {
                 <p className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
                   {listing.usageHistory}
                 </p>
+              </div>
+            )}
+
+            {listing.inspection && listing.status === 'VERIFIED' && (
+              <div className="space-y-4 p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-800">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-green-600">verified</span>
+                  <h2 className="text-2xl font-bold text-green-600">Đã kiểm định</h2>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Tóm tắt báo cáo:</p>
+                  <p className="text-slate-700 dark:text-slate-300 whitespace-pre-line">
+                    {listing.inspection.summary}
+                  </p>
+                </div>
+                
+                {/* Checklist Details */}
+                {listing.inspection.checklistJson && (() => {
+                  try {
+                    const checklist = JSON.parse(listing.inspection.checklistJson as any) as Checklist;
+                    return (
+                      <div className="mt-4">
+                        <p className="font-semibold mb-3">Chi tiết kiểm định:</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          {CHECKLIST_ITEMS.map(item => {
+                            const checklistItem = checklist[item.id];
+                            if (!checklistItem) return null;
+                            const condition = checklistItem.condition as 'excellent' | 'good' | 'fair' | 'poor';
+                            return (
+                              <div key={item.id} className="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="font-semibold text-sm">{item.label}</p>
+                                  <span className={`px-2 py-1 rounded text-xs font-semibold text-white ${CONDITION_COLORS[condition]?.bg || 'bg-slate-500'}`}>
+                                    {CONDITION_LABELS[condition] || 'N/A'}
+                                  </span>
+                                </div>
+                                {checklistItem.notes && (
+                                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                                    {checklistItem.notes}
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  } catch (e) {
+                    console.error('Failed to parse checklist JSON:', e);
+                    return null;
+                  }
+                })()}
+                
+                {listing.inspection.inspector && (
+                  <div className="text-sm text-slate-600 dark:text-slate-400 pt-4 border-t border-green-200 dark:border-green-700">
+                    <p>Kiểm định viên: <span className="font-semibold">{listing.inspection.inspector.fullName}</span></p>
+                    <p>Ngày kiểm định: {formatDateTime(listing.inspection.createdAt)}</p>
+                  </div>
+                )}
+                {listing.inspection.reportUrl && (
+                  <a 
+                    href={listing.inspection.reportUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold"
+                  >
+                    <span className="material-symbols-outlined text-sm">description</span>
+                    Xem báo cáo chi tiết
+                  </a>
+                )}
               </div>
             )}
 

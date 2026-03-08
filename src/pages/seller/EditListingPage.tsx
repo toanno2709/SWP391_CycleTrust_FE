@@ -1,23 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { MainLayout } from '../../layouts/MainLayout';
 import { listingService } from '../../services/listing';
 import { useCatalogStore } from '../../store/catalog';
-import { Input, Textarea, Button, Card } from '../../components/ui';
+import { Input, Textarea, Button, Card, Loading } from '../../components/ui';
 import { ImageUploader } from '../../components/listing/ImageUploader';
 import { useForm } from '../../hooks/useForm';
-import { useEffect } from 'react';
+import type { Listing } from '../../types';
 
-export const CreateListingPage = () => {
+export const EditListingPage = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const { brands, categories, sizes, fetchAll } = useCatalogStore();
 
-  const { values, errors, handleChange } = useForm({
+  const { values, errors, handleChange, setValues } = useForm({
     title: '',
     description: '',
     usageHistory: '',
@@ -34,7 +36,48 @@ export const CreateListingPage = () => {
     fetchAll();
   }, [fetchAll]);
 
+  useEffect(() => {
+    const fetchListing = async () => {
+      if (!id) return;
+      
+      try {
+        const data = await listingService.getById(Number(id));
+        
+        // Check if listing is editable (only DRAFT can be edited)
+        if (data.status !== 'DRAFT') {
+          toast.error('Chỉ có thể sửa listing ở trạng thái bản nháp');
+          navigate('/seller/listings');
+          return;
+        }
+        
+        setValues({
+          title: data.title,
+          description: data.description,
+          usageHistory: data.usageHistory || '',
+          locationText: data.locationText || '',
+          brandId: data.brandId?.toString() || '',
+          categoryId: data.categoryId?.toString() || '',
+          sizeOptionId: data.sizeOptionId?.toString() || '',
+          priceAmount: data.priceAmount.toString(),
+          conditionNote: data.conditionNote || '',
+          yearModel: data.yearModel?.toString() || '',
+        });
+        
+        setMediaUrls(data.media?.map(m => m.url) || []);
+      } catch (error: any) {
+        toast.error(error.message || 'Không thể tải listing');
+        navigate('/seller/listings');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchListing();
+  }, [id, navigate, setValues]);
+
   const handleSaveDraft = async () => {
+    if (!id) return;
+    
     if (!values.title || !values.description) {
       toast.error('Vui lòng nhập tiêu đề và mô tả');
       return;
@@ -42,7 +85,7 @@ export const CreateListingPage = () => {
 
     setSavingDraft(true);
     try {
-      await listingService.create({
+      await listingService.update(Number(id), {
         title: values.title,
         description: values.description,
         usageHistory: values.usageHistory || undefined,
@@ -57,10 +100,10 @@ export const CreateListingPage = () => {
         status: 'DRAFT',
       });
       
-      toast.success('Đã lưu bản nháp');
+      toast.success('Đã cập nhật bản nháp');
       navigate('/seller/listings');
     } catch (error: any) {
-      toast.error(error.message || 'Lưu bản nháp thất bại');
+      toast.error(error.message || 'Cập nhật thất bại');
     } finally {
       setSavingDraft(false);
     }
@@ -69,14 +112,16 @@ export const CreateListingPage = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
+    if (!id) return;
+    
     if (mediaUrls.length === 0) {
       toast.error('Vui lòng upload ít nhất 1 ảnh');
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
     try {
-      await listingService.create({
+      await listingService.update(Number(id), {
         title: values.title,
         description: values.description,
         usageHistory: values.usageHistory || undefined,
@@ -96,17 +141,25 @@ export const CreateListingPage = () => {
     } catch (error: any) {
       toast.error(error.message || 'Đăng tin thất bại');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <Loading fullScreen />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       <div className="max-w-4xl mx-auto px-6 py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-black mb-2">Đăng bán xe đạp</h1>
+          <h1 className="text-4xl font-black mb-2">Chỉnh sửa tin đăng</h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Điền thông tin chi tiết để bắt đầu đăng bán
+            Cập nhật thông tin và đăng tin
           </p>
         </div>
 
@@ -114,6 +167,13 @@ export const CreateListingPage = () => {
           <Card>
             <h2 className="text-2xl font-bold mb-6">Hình ảnh</h2>
             <ImageUploader onUpload={setMediaUrls} maxFiles={10} />
+            {mediaUrls.length > 0 && (
+              <div className="mt-4 grid grid-cols-3 gap-4">
+                {mediaUrls.map((url, index) => (
+                  <img key={index} src={url} alt={`Preview ${index + 1}`} className="w-full h-32 object-cover rounded" />
+                ))}
+              </div>
+            )}
           </Card>
 
           <Card>
@@ -253,13 +313,13 @@ export const CreateListingPage = () => {
               variant="secondary"
               onClick={handleSaveDraft}
               isLoading={savingDraft}
-              disabled={loading}
+              disabled={submitting}
             >
               💾 Lưu bản nháp
             </Button>
             <Button
               type="submit"
-              isLoading={loading}
+              isLoading={submitting}
               disabled={savingDraft}
               className="flex-1"
             >

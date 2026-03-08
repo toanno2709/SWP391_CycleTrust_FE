@@ -54,20 +54,26 @@ export const listingService = {
     return response.data;
   },
 
-  async approve(id: number): Promise<Listing> {
-    const response = await apiClient.post<ApiResponse<Listing>>(`/listings/${id}/approve`);
+  async approve(id: number, reason?: string): Promise<Listing> {
+    const response = await apiClient.post<ApiResponse<Listing>>(`/listings/${id}/approve`, { 
+      approved: true,
+      reason 
+    });
     if (!response.data) throw new Error('Failed to approve listing');
     return response.data;
   },
 
   async reject(id: number, reason: string): Promise<Listing> {
-    const response = await apiClient.post<ApiResponse<Listing>>(`/listings/${id}/reject`, { reason });
+    const response = await apiClient.post<ApiResponse<Listing>>(`/listings/${id}/approve`, { 
+      approved: false,
+      reason 
+    });
     if (!response.data) throw new Error('Failed to reject listing');
     return response.data;
   },
 
-  async createInspection(data: CreateInspectionRequest): Promise<Inspection> {
-    const response = await apiClient.post<ApiResponse<Inspection>>('/listings/inspection', data);
+  async createInspection(listingId: number, data: CreateInspectionRequest): Promise<Inspection> {
+    const response = await apiClient.post<ApiResponse<Inspection>>(`/listings/${listingId}/inspection`, data);
     if (!response.data) throw new Error('Failed to create inspection');
     return response.data;
   },
