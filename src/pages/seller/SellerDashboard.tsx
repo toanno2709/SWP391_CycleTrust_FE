@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MainLayout } from '../../layouts/MainLayout';
 import { listingService } from '../../services/listing';
 import type { Listing } from '../../types';
@@ -8,6 +8,7 @@ import { LISTING_STATUS_LABELS, ROUTES } from '../../config/constants';
 import { Card, Loading, Button } from '../../components/ui';
 
 export const SellerDashboard = () => {
+  const navigate = useNavigate();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -137,12 +138,22 @@ export const SellerDashboard = () => {
                       </span>
                     </div>
                   </div>
-                  <Link
-                    to={`/listings/${listing.id}`}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                  >
-                    Xem
-                  </Link>
+                  <div className="flex gap-2">
+                    {listing.status === 'DRAFT' && (
+                      <button
+                        onClick={() => navigate(`/seller/listings/${listing.id}/edit`)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        ✏️ Sửa
+                      </button>
+                    )}
+                    <Link
+                      to={`/listings/${listing.id}`}
+                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      Xem
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
