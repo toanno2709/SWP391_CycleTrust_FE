@@ -5,6 +5,7 @@ import { DownOutlined, UserOutlined, DashboardOutlined, LogoutOutlined, Shopping
 import { useAuthStore } from '../../store/auth';
 import { ROUTES } from '../../config/constants';
 import { UserRole } from '../../types';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 export const Header = () => {
   const { user, isAuthenticated, logout } = useAuthStore();
@@ -117,7 +118,7 @@ export const Header = () => {
         <div className="flex items-center gap-10">
           <Link to={ROUTES.HOME} className="flex items-center gap-2 text-green-600">
             <span className="material-symbols-outlined text-3xl font-bold">directions_bike</span>
-            <h2 className="text-slate-900 dark:text-white text-xl font-black tracking-tight">
+            <h2 className="!mb-0 text-slate-900 dark:text-white text-xl font-black tracking-tight">
               CycleTrust
             </h2>
           </Link>
@@ -136,19 +137,14 @@ export const Header = () => {
                 Đăng bán
               </Link>
             )}
-            <Link
-              to="#"
-              className="text-sm font-semibold hover:text-green-600 transition-colors"
-            >
-              Xe đã xác thực
-            </Link>
+           
           </nav>
         </div>
 
         <div className="flex items-center gap-4">
           {isAuthenticated ? (
             <>
-             
+              <NotificationBell />
               <Dropdown menu={{ items: getProfileMenuItems() }} trigger={['click']} placement="bottomRight">
                 <div className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 px-3 py-2 rounded-lg transition-colors">
                   {user?.avatarUrl ? (

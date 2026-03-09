@@ -4,6 +4,7 @@ import { MainLayout } from "../../layouts/MainLayout";
 import { orderService } from "../../services/order";
 import type { Order } from "../../types";
 import toast from "react-hot-toast";
+import { formatDateTime } from "../../utils/format";
 
 export default function SellerOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -120,7 +121,7 @@ export default function SellerOrderDetailPage() {
             <h2 className="text-xl font-semibold mb-4">Tiến trình</h2>
             <div className="space-y-3">
               <div className="text-green-600">
-                ✓ Đã đặt hàng - {new Date(order.createdAt).toLocaleString()}
+                ✓ Đã đặt hàng - {formatDateTime(order.createdAt)}
               </div>
               {order.depositRequired && (
                 <div
@@ -130,7 +131,7 @@ export default function SellerOrderDetailPage() {
                 >
                   {order.depositPaidAt ? "✓" : "○"} Đã thanh toán cọc
                   {order.depositPaidAt &&
-                    ` - ${new Date(order.depositPaidAt).toLocaleString()}`}
+                    ` - ${formatDateTime(order.depositPaidAt)}`}
                 </div>
               )}
               <div
@@ -156,7 +157,7 @@ export default function SellerOrderDetailPage() {
               >
                 {order.deliveredAt ? "✓" : "○"} Đã giao hàng
                 {order.deliveredAt &&
-                  ` - ${new Date(order.deliveredAt).toLocaleString()}`}
+                  ` - ${formatDateTime(order.deliveredAt)}`}
               </div>
               <div
                 className={
@@ -165,28 +166,19 @@ export default function SellerOrderDetailPage() {
               >
                 {order.completedAt ? "✓" : "○"} Hoàn thành
                 {order.completedAt &&
-                  ` - ${new Date(order.completedAt).toLocaleString()}`}
+                  ` - ${formatDateTime(order.completedAt)}`}
               </div>
             </div>
           </div>
 
           {/* Actions for Seller */}
           <div className="flex flex-wrap gap-3">
-            {order.status === "CONFIRMED" && (
+            {(order.status === "CONFIRMED" || order.status === "DEPOSIT_PAID") && (
               <button
                 onClick={() => handleUpdateStatus("SHIPPING")}
                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
-                Bắt đầu giao hàng
-              </button>
-            )}
-
-            {order.status === "SHIPPING" && (
-              <button
-                onClick={() => handleUpdateStatus("DELIVERED")}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              >
-                Đã giao hàng
+                🚚 Xác nhận và gửi hàng
               </button>
             )}
           </div>
@@ -204,7 +196,7 @@ export default function SellerOrderDetailPage() {
                     <div>
                       <p className="font-semibold">{payment.type}</p>
                       <p className="text-sm text-gray-600">
-                        {new Date(payment.createdAt).toLocaleString()}
+                        {formatDateTime(payment.createdAt)}
                       </p>
                     </div>
                     <div className="text-right">

@@ -6,6 +6,7 @@ import { disputeService } from '../../services/dispute';
 import type { Dispute } from '../../services/dispute';
 import { useAuthStore } from '../../store/auth';
 import { UserRole } from '../../types';
+import { formatDateTime } from '../../utils/format';
 
 const DisputeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -173,7 +174,7 @@ const DisputeDetailPage: React.FC = () => {
             </div>
             <div>
               <span className="text-gray-600">Thời gian tạo:</span>
-              <span className="ml-2">{new Date(dispute.createdAt).toLocaleString('vi-VN')}</span>
+              <span className="ml-2">{formatDateTime(dispute.createdAt)}</span>
             </div>
             {dispute.assignedInspectorName && (
               <div>
@@ -190,7 +191,7 @@ const DisputeDetailPage: React.FC = () => {
             {dispute.resolvedAt && (
               <div>
                 <span className="text-gray-600">Thời gian giải quyết:</span>
-                <span className="ml-2">{new Date(dispute.resolvedAt).toLocaleString('vi-VN')}</span>
+                <span className="ml-2">{formatDateTime(dispute.resolvedAt)}</span>
               </div>
             )}
           </div>
@@ -315,7 +316,7 @@ const DisputeDetailPage: React.FC = () => {
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-blue-700">{event.actorName}</span>
                         <span className="text-xs text-gray-500">
-                          {new Date(event.createdAt).toLocaleString('vi-VN')}
+                          {formatDateTime(event.createdAt)}
                         </span>
                       </div>
                       {event.message && (

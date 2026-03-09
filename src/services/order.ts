@@ -51,19 +51,19 @@ export const orderService = {
     return response.data;
   },
 
-  async updateStatus(orderId: number, status: OrderStatus): Promise<Order> {
-    const response = await apiClient.post<ApiResponse<Order>>(
+  async updateStatus(orderId: number, status: OrderStatus, note?: string): Promise<Order> {
+    const response = await apiClient.put<ApiResponse<Order>>(
       `/orders/${orderId}/status`,
-      { status }
+      { status, note }
     );
     if (!response.data) throw new Error('Failed to update order status');
     return response.data;
   },
 
   async cancel(orderId: number, reason: string): Promise<Order> {
-    const response = await apiClient.post<ApiResponse<Order>>(
-      `/orders/${orderId}/cancel`,
-      { reason }
+    const response = await apiClient.put<ApiResponse<Order>>(
+      `/orders/${orderId}/status`,
+      { status: 'CANCELED', note: reason }
     );
     if (!response.data) throw new Error('Failed to cancel order');
     return response.data;

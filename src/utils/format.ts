@@ -15,7 +15,8 @@ export const formatDate = (date: string | Date): string => {
   return new Intl.DateTimeFormat('vi-VN', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    timeZone: 'Asia/Ho_Chi_Minh'
   }).format(new Date(date));
 };
 
@@ -25,8 +26,32 @@ export const formatDateTime = (date: string | Date): string => {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'Asia/Ho_Chi_Minh'
   }).format(new Date(date));
+};
+
+// Helper to convert UTC date string to Vietnam time string
+export const toVietnamTime = (date: string | Date): string => {
+  return new Date(date).toLocaleString('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+};
+
+export const toVietnamDate = (date: string | Date): string => {
+  return new Date(date).toLocaleDateString('vi-VN', {
+    timeZone: 'Asia/Ho_Chi_Minh',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  });
 };
 
 export const formatRelativeTime = (date: string | Date): string => {

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { orderService } from '../../services/order';
 import type { Order, Payment } from '../../types';
+import { formatDateTime } from '../../utils/format';
 
 const AdminOrderDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -141,11 +142,11 @@ const AdminOrderDetailPage: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Thời gian tạo:</span>
-                  <span className="font-medium">{new Date(order.createdAt).toLocaleString('vi-VN')}</span>
+                  <span className="font-medium">{formatDateTime(order.createdAt)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Cập nhật:</span>
-                  <span className="font-medium">{new Date(order.updatedAt).toLocaleString('vi-VN')}</span>
+                  <span className="font-medium">{formatDateTime(order.updatedAt)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Giá xe:</span>
@@ -290,7 +291,7 @@ const AdminOrderDetailPage: React.FC = () => {
                           {payment.status}
                         </td>
                         <td className="px-4 py-2 text-gray-600">
-                          {new Date(payment.paidAt || payment.createdAt).toLocaleString('vi-VN')}
+                          {formatDateTime(payment.paidAt || payment.createdAt)}
                         </td>
                       </tr>
                     ))}

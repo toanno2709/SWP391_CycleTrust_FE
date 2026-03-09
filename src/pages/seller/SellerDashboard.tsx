@@ -39,7 +39,7 @@ export const SellerDashboard = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
           <Card>
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center">
@@ -76,6 +76,20 @@ export const SellerDashboard = () => {
                   {listings.filter(l => l.status === 'VERIFIED').length}
                 </p>
                 <p className="text-sm text-slate-500">Đã xác thực</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card>
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-red-500 text-2xl">cancel</span>
+              </div>
+              <div>
+                <p className="text-3xl font-black">
+                  {listings.filter(l => l.status === 'REJECTED').length}
+                </p>
+                <p className="text-sm text-slate-500">Đã từ chối</p>
               </div>
             </div>
           </Card>
@@ -123,11 +137,12 @@ export const SellerDashboard = () => {
                   <div className="flex-1">
                     <h3 className="font-bold mb-1">{listing.title}</h3>
                     <p className="text-sm text-slate-500 mb-2">{formatDateTime(listing.createdAt)}</p>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 flex-wrap">
                       <span className={`text-xs font-bold px-2 py-1 rounded ${
                         listing.status === 'VERIFIED' ? 'bg-green-500/10 text-green-600' :
                         listing.status === 'APPROVED' ? 'bg-blue-500/10 text-blue-600' :
                         listing.status === 'PENDING_APPROVAL' ? 'bg-yellow-500/10 text-yellow-600' :
+                        listing.status === 'REJECTED' ? 'bg-red-500/10 text-red-600' :
                         listing.status === 'SOLD' ? 'bg-slate-500/10 text-slate-600' :
                         'bg-slate-500/10 text-slate-600'
                       }`}>
@@ -137,6 +152,16 @@ export const SellerDashboard = () => {
                         {formatCurrency(listing.priceAmount, listing.currency)}
                       </span>
                     </div>
+                    {listing.status === 'REJECTED' && listing.rejectedReason && (
+                      <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
+                          ⚠️ Lý do từ chối:
+                        </p>
+                        <p className="text-sm text-red-700 dark:text-red-400">
+                          {listing.rejectedReason}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     {listing.status === 'DRAFT' && (

@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { MainLayout } from '../../layouts/MainLayout';
 import { orderService } from '../../services/order';
 import type { Order } from '../../types';
-import { formatCurrency } from '../../utils/format';
+import { formatCurrency, formatDateTime } from '../../utils/format';
 
 const { TabPane } = Tabs;
 
@@ -112,7 +112,7 @@ export default function BuyerOrdersPage() {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 180,
-      render: (date) => new Date(date).toLocaleString('vi-VN'),
+      render: (date) => formatDateTime(date),
     },
   ];
 

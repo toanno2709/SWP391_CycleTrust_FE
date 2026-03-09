@@ -90,4 +90,8 @@ export const authService = {
   isAuthenticated(): boolean {
     return !!localStorage.getItem(TOKEN_KEY);
   },
+
+  getToken(): string | null {
+    return localStorage.getItem(TOKEN_KEY);
+  },
 };

@@ -257,3 +257,80 @@ export interface CreateInspectionRequest {
   checklistJson?: string;
   reportUrl?: string;
 }
+
+export const NotificationType = {
+  ORDER_CREATED: 'ORDER_CREATED',
+  ORDER_CONFIRMED: 'ORDER_CONFIRMED',
+  ORDER_SHIPPING: 'ORDER_SHIPPING',
+  ORDER_DELIVERED: 'ORDER_DELIVERED',
+  ORDER_COMPLETED: 'ORDER_COMPLETED',
+  ORDER_CANCELED: 'ORDER_CANCELED',
+  PAYMENT_SUCCESS: 'PAYMENT_SUCCESS',
+  PAYMENT_FAILED: 'PAYMENT_FAILED',
+  LISTING_APPROVED: 'LISTING_APPROVED',
+  LISTING_REJECTED: 'LISTING_REJECTED',
+  LISTING_VERIFIED: 'LISTING_VERIFIED',
+  INSPECTION_COMPLETED: 'INSPECTION_COMPLETED',
+  DISPUTE_CREATED: 'DISPUTE_CREATED',
+  DISPUTE_RESOLVED: 'DISPUTE_RESOLVED',
+  REVIEW_RECEIVED: 'REVIEW_RECEIVED',
+  MESSAGE_RECEIVED: 'MESSAGE_RECEIVED',
+  SELLER_APPROVED: 'SELLER_APPROVED',
+  SELLER_REJECTED: 'SELLER_REJECTED'
+} as const;
+export type NotificationType = typeof NotificationType[keyof typeof NotificationType];
+
+export interface Notification {
+  id: number;
+  userId: number;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  relatedEntityId?: number;
+  relatedEntityType?: string;
+  actionUrl?: string;
+  createdAt: string;
+}
+
+export interface NotificationSummary {
+  unreadCount: number;
+  recentNotifications: Notification[];
+}
+
+export interface ChatConversation {
+  id: number;
+  listingId?: number;
+  listingTitle?: string;
+  buyerId: number;
+  buyerName: string;
+  buyerAvatar?: string;
+  sellerId: number;
+  sellerName: string;
+  sellerAvatar?: string;
+  lastMessageAt?: string;
+  lastMessage?: string;
+  lastMessageSenderId?: number;
+  unreadCountBuyer: number;
+  unreadCountSeller: number;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  senderId: number;
+  senderName: string;
+  senderAvatar?: string;
+  content: string;
+  isRead: boolean;
+  readAt?: string;
+  createdAt: string;
+}
+
+export interface SendMessageRequest {
+  conversationId?: number;
+  listingId?: number;
+  receiverId: number;
+  content: string;
+}

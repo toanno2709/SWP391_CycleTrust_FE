@@ -4,6 +4,7 @@ import { MainLayout } from '../../layouts/MainLayout';
 import { disputeService } from '../../services/dispute';
 import type { Dispute } from '../../services/dispute';
 import toast from 'react-hot-toast';
+import { formatDateTime } from '../../utils/format';
 
 export default function DisputesListPage() {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ export default function DisputesListPage() {
               <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
                 <div>
                   <p>Người tạo: {dispute.openedByName}</p>
-                  <p>Thời gian: {new Date(dispute.createdAt).toLocaleString()}</p>
+                  <p>Thời gian: {formatDateTime(dispute.createdAt)}</p>
                 </div>
                 {dispute.assignedInspectorName && (
                   <div>
@@ -92,7 +93,7 @@ export default function DisputesListPage() {
                 )}
                 {dispute.resolvedAt && (
                   <div className="col-span-2">
-                    <p className="text-green-600">Đã giải quyết: {new Date(dispute.resolvedAt).toLocaleString()}</p>
+                    <p className="text-green-600">Đã giải quyết: {formatDateTime(dispute.resolvedAt)}</p>
                   </div>
                 )}
               </div>

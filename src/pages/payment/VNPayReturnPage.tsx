@@ -4,6 +4,7 @@ import { Card, Result, Spin, Button, Descriptions } from 'antd';
 import { CheckCircleOutlined, CloseCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 import { vnpayService, type VNPayReturn } from '../../services/vnpay';
 import toast from 'react-hot-toast';
+import { formatDateTime as formatDateTimeVN } from '../../utils/format';
 
 export const VNPayReturnPage = () => {
   const [searchParams] = useSearchParams();
@@ -53,7 +54,7 @@ export const VNPayReturnPage = () => {
 
   const formatDateTime = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleString('vi-VN');
+      return formatDateTimeVN(dateString);
     } catch {
       return dateString;
     }

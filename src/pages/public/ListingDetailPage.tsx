@@ -5,6 +5,7 @@ import { listingService } from '../../services/listing';
 import { orderService } from '../../services/order';
 import { wishlistService } from '../../services/wishlist';
 import { useAuthStore } from '../../store/auth';
+import { useChatStore } from '../../store/chat';
 import type { Listing } from '../../types';
 import { UserRole } from '../../types';
 import { formatCurrency, formatDateTime } from '../../utils/format';
@@ -119,11 +120,26 @@ export const ListingDetailPage = () => {
     }
   };
 
+  const handleChatWithSeller = () => {
+    if (!listing || !user) {
+      toast.error('Vui lòng đăng nhập');
+      return;
+    }
+
+    if (user.id === listing.sellerId) {
+      toast.error('Bạn không thể nhắn tin với chính mình');
+      return;
+    }
+
+    useChatStore.getState().openChatWithSeller(listing.id, listing.sellerId);
+  };
+
 
   if (loading) return <MainLayout><Loading fullScreen /></MainLayout>;
   if (!listing) return <MainLayout><div className="text-center py-16">Không tìm thấy listing</div></MainLayout>;
 
   const images = listing.media?.filter(m => m.type === 'IMAGE').map(m => m.url) || [];
+  const video = listing.media?.find(m => m.type === 'VIDEO');
   const canBuy = user?.role === UserRole.BUYER && listing.status === 'VERIFIED';
 
   return (
@@ -151,6 +167,22 @@ export const ListingDetailPage = () => {
                     <img src={img} alt={`${listing.title} ${idx + 1}`} className="w-full h-full object-cover" />
                   </button>
                 ))}
+              </div>
+            )}
+            
+            {video && (
+              <div className="mt-6">
+                <h3 className="text-lg font-bold mb-3">Video giới thiệu</h3>
+                <div className="aspect-video rounded-xl overflow-hidden bg-slate-900">
+                  <video
+                    src={video.url}
+                    controls
+                    className="w-full h-full"
+                    preload="metadata"
+                  >
+                    Trình duyệt của bạn không hỗ trợ video.
+                  </video>
+                </div>
               </div>
             )}
           </div>
@@ -181,28 +213,40 @@ export const ListingDetailPage = () => {
             </div>
 
             {canBuy && (
-              <div className="flex gap-3">
-                <Button
-                  size="lg"
-                  className="flex-1"
-                  onClick={() => setOrderModalOpen(true)}
-                >
-                  Đặt mua ngay
-                </Button>
-                <button
-                  onClick={handleToggleWishlist}
-                  disabled={wishlistLoading}
-                  className={`px-4 py-2 rounded-lg border-2 transition-all ${
-                    inWishlist
-                      ? 'bg-red-50 border-red-500 text-red-500'
-                      : 'bg-white border-slate-300 text-slate-600 hover:border-red-500 hover:text-red-500'
-                  } disabled:opacity-50`}
-                  title={inWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
-                >
-                  <span className="material-symbols-outlined">
-                    {inWishlist ? 'favorite' : 'favorite_border'}
-                  </span>
-                </button>
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-3">
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={() => setOrderModalOpen(true)}
+                  >
+                    Đặt mua ngay
+                  </Button>
+                  <button
+                    onClick={handleToggleWishlist}
+                    disabled={wishlistLoading}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                      inWishlist
+                        ? 'bg-red-50 border-red-500 text-red-500'
+                        : 'bg-white border-slate-300 text-slate-600 hover:border-red-500 hover:text-red-500'
+                    } disabled:opacity-50`}
+                    title={inWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
+                  >
+                    <span className="material-symbols-outlined">
+                      {inWishlist ? 'favorite' : 'favorite_border'}
+                    </span>
+                  </button>
+                </div>
+                {user && user.id !== listing.sellerId && (
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={handleChatWithSeller}
+                    className="w-full"
+                  >
+                    Nhắn tin với người bán
+                  </Button>
+                )}
               </div>
             )}
 

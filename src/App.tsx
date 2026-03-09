@@ -5,6 +5,8 @@ import { useAuthStore } from './store/auth';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserRole } from './types';
 import { ROUTES } from './config/constants';
+import { signalRService } from './services/signalr';
+import { ChatBubble } from './components/chat/ChatBubble';
 
 import { HomePage } from './pages/public/HomePage';
 import { SearchPage } from './pages/public/SearchPage';
@@ -18,6 +20,7 @@ import BuyerOrderDetailPage from './pages/buyer/BuyerOrderDetailPage';
 import WishlistPage from './pages/buyer/WishlistPage';
 import DisputesListPage from './pages/buyer/DisputesListPage';
 import DisputeDetailPage from './pages/buyer/DisputeDetailPage';
+import { NotificationsPage } from './pages/notifications/NotificationsPage';
 
 import { SellerDashboard } from './pages/seller/SellerDashboard';
 import { CreateListingPage } from './pages/seller/CreateListingPage';
@@ -43,11 +46,40 @@ import { VNPayReturnPage } from './pages/payment/VNPayReturnPage';
 import { Loading } from './components/ui';
 
 function App() {
-  const { checkAuth, isLoading } = useAuthStore();
+  const { checkAuth, isLoading, isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🚀 Starting SignalR connections...');
+      // Start connections and wait for them to be ready
+      Promise.all([
+        signalRService.startNotificationConnection(),
+        signalRService.startChatConnection()
+      ]).then(() => {
+        console.log('✅ All SignalR connections ready');
+      });
+
+      // Don't cleanup connections on re-render
+      // Only stop on window unload
+    }
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    // Cleanup on window unload
+    const handleUnload = () => {
+      signalRService.stopAllConnections();
+    };
+    
+    window.addEventListener('beforeunload', handleUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, []);
 
   if (isLoading) {
     return <Loading fullScreen />;
@@ -56,12 +88,19 @@ function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
+      {isAuthenticated && <ChatBubble />}
       <Routes>
         <Route path={ROUTES.HOME} element={<HomePage />} />
         <Route path={ROUTES.SEARCH} element={<SearchPage />} />
         <Route path={ROUTES.LISTING_DETAIL} element={<ListingDetailPage />} />
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        
+        <Route path="/notifications" element={
+          <ProtectedRoute allowedRoles={[UserRole.BUYER, UserRole.SELLER, UserRole.ADMIN, UserRole.INSPECTOR]}>
+            <NotificationsPage />
+          </ProtectedRoute>
+        } />
         
         {/* VNPay Payment Return */}
         <Route path="/payment/vnpay-return" element={<VNPayReturnPage />} />

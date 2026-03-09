@@ -6,6 +6,7 @@ import { EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { disputeService } from '../../services/dispute';
 import type { Dispute } from '../../services/dispute';
 import toast from 'react-hot-toast';
+import { toVietnamDate } from '../../utils/format';
 
 const { Option } = Select;
 
@@ -105,7 +106,7 @@ export default function AdminDisputesPage() {
       title: 'Thời gian',
       dataIndex: 'createdAt',
       key: 'createdAt',
-      render: (date: string) => new Date(date).toLocaleDateString('vi-VN'),
+      render: (date: string) => toVietnamDate(date),
     },
     {
       title: 'Hành động',

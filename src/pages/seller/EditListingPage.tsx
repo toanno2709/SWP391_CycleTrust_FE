@@ -353,7 +353,7 @@ export const EditListingPage = () => {
               isLoading={savingDraft}
               disabled={submitting}
             >
-              💾 Lưu bản nháp
+              Lưu bản nháp
             </Button>
             <Button
               type="submit"
@@ -361,7 +361,7 @@ export const EditListingPage = () => {
               disabled={savingDraft}
               className="flex-1"
             >
-              📤 Đăng tin
+              Đăng tin
             </Button>
           </div>
         </form>
