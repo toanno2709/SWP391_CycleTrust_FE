@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Tabs, Tag, message } from 'antd';
+import { Table, Tabs, Tag, Button, message } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { MainLayout } from '../../layouts/MainLayout';
 import { orderService } from '../../services/order';
@@ -114,6 +115,20 @@ export default function BuyerOrdersPage() {
       width: 180,
       render: (date) => formatDateTime(date),
     },
+    {
+      title: 'Thao tác',
+      key: 'actions',
+      width: 150,
+      render: (_: any, record: Order) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`/buyer/orders/${record.id}`)}
+        >
+          Xem chi tiết
+        </Button>
+      ),
+    },
   ];
 
   const filteredOrders = orders.filter((order) => {
@@ -174,10 +189,6 @@ export default function BuyerOrdersPage() {
           dataSource={filteredOrders}
           loading={loading}
           rowKey="id"
-          onRow={(record) => ({
-            onClick: () => navigate(`/buyer/orders/${record.id}`),
-            style: { cursor: 'pointer' },
-          })}
           pagination={{
             pageSize: 10,
             showSizeChanger: true,

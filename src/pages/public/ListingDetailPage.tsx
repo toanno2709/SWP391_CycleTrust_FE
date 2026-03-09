@@ -26,7 +26,7 @@ export const ListingDetailPage = () => {
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [orderModalOpen, setOrderModalOpen] = useState(false);
-  const [useDeposit, setUseDeposit] = useState(true);
+  const [useDeposit, setUseDeposit] = useState(false);
   const [creating, setCreating] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [inWishlist, setInWishlist] = useState(false);
@@ -64,7 +64,7 @@ export const ListingDetailPage = () => {
     try {
       const order = await orderService.create({
         listingId: listing.id,
-        useDeposit,
+        depositRequired: useDeposit,
       });
       
       toast.success('Đã tạo đơn hàng thành công!');

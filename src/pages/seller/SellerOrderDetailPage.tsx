@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Carousel, Image } from "antd";
 import { MainLayout } from "../../layouts/MainLayout";
 import { orderService } from "../../services/order";
-import type { Order } from "../../types";
+import { listingService } from "../../services/listing";
+import type { Order, Listing } from "../../types";
 import toast from "react-hot-toast";
 import { formatDateTime } from "../../utils/format";
 
@@ -10,6 +12,7 @@ export default function SellerOrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
+  const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +24,16 @@ export default function SellerOrderDetailPage() {
       setLoading(true);
       const data = await orderService.getById(Number(id));
       setOrder(data);
+      
+      // Load listing details
+      if (data.listingId) {
+        try {
+          const listingData = await listingService.getById(data.listingId);
+          setListing(listingData);
+        } catch (err) {
+          console.error('Failed to load listing details:', err);
+        }
+      }
     } catch (error: any) {
       toast.error(error.message || "Lỗi khi tải order");
       navigate("/seller/dashboard");
@@ -115,6 +128,88 @@ export default function SellerOrderDetailPage() {
               </div>
             )}
           </div>
+
+          {/* Listing Details */}
+          {listing && (
+            <div className="mb-6 border-t pt-6">
+              <h2 className="text-xl font-semibold mb-4">Thông tin xe đạp</h2>
+              
+              {/* Images */}
+              {listing.media && listing.media.length > 0 && (
+                <div className="mb-4">
+                  <Carousel autoplay>
+                    {listing.media.map((media) => (
+                      <div key={media.id}>
+                        <Image
+                          src={media.url}
+                          alt={listing.title}
+                          className="w-full h-64 object-cover rounded"
+                        />
+                      </div>
+                    ))}
+                  </Carousel>
+                </div>
+              )}
+
+              {/* Bike Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-gray-600">Tên xe:</p>
+                  <p className="font-semibold">{listing.title}</p>
+                </div>
+                {listing.brandName && (
+                  <div>
+                    <p className="text-gray-600">Thương hiệu:</p>
+                    <p className="font-semibold">{listing.brandName}</p>
+                  </div>
+                )}
+                {listing.categoryName && (
+                  <div>
+                    <p className="text-gray-600">Loại xe:</p>
+                    <p className="font-semibold">{listing.categoryName}</p>
+                  </div>
+                )}
+                {listing.sizeLabel && (
+                  <div>
+                    <p className="text-gray-600">Kích cỡ:</p>
+                    <p className="font-semibold">{listing.sizeLabel}</p>
+                  </div>
+                )}
+                {listing.yearModel && (
+                  <div>
+                    <p className="text-gray-600">Năm sản xuất:</p>
+                    <p className="font-semibold">{listing.yearModel}</p>
+                  </div>
+                )}
+                {listing.conditionNote && (
+                  <div>
+                    <p className="text-gray-600">Tình trạng:</p>
+                    <p className="font-semibold">{listing.conditionNote}</p>
+                  </div>
+                )}
+                {listing.locationText && (
+                  <div>
+                    <p className="text-gray-600">Vị trí:</p>
+                    <p className="font-semibold">{listing.locationText}</p>
+                  </div>
+                )}
+              </div>
+
+              {listing.description && (
+                <div className="mt-4">
+                  <p className="text-gray-600 mb-2">Mô tả:</p>
+                  <p className="text-gray-800 whitespace-pre-wrap">{listing.description}</p>
+                </div>
+              )}
+
+              {listing.usageHistory && (
+                <div className="mt-4">
+                  <p className="text-gray-600 mb-2">Lịch sử sử dụng:</p>
+                  <p className="text-gray-800 whitespace-pre-wrap">{listing.usageHistory}</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Timeline */}
           <div className="mb-6">

@@ -140,4 +140,44 @@ export const userService = {
     }
     throw new Error(response.message || 'Failed to fetch pending sellers');
   },
+
+  /**
+   * Update current user profile
+   */
+  async updateProfile(data: { fullName?: string; phone?: string }): Promise<User> {
+    const response = await apiClient.put<ApiResponse<User>>('/users/profile', data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Failed to update profile');
+  },
+
+  /**
+   * Change current user password
+   */
+  async changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
+    const response = await apiClient.post<ApiResponse<void>>('/users/change-password', data);
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to change password');
+    }
+  },
+
+  /**
+   * Upload user avatar
+   */
+  async uploadAvatar(file: File): Promise<User> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await apiClient.post<ApiResponse<User>>('/users/avatar', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Failed to upload avatar');
+  },
 };

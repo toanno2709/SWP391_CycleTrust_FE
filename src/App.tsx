@@ -21,6 +21,8 @@ import WishlistPage from './pages/buyer/WishlistPage';
 import DisputesListPage from './pages/buyer/DisputesListPage';
 import DisputeDetailPage from './pages/buyer/DisputeDetailPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
+import { ChangePasswordPage } from './pages/profile/ChangePasswordPage';
 
 import { SellerDashboard } from './pages/seller/SellerDashboard';
 import { CreateListingPage } from './pages/seller/CreateListingPage';
@@ -99,6 +101,18 @@ function App() {
         <Route path="/notifications" element={
           <ProtectedRoute allowedRoles={[UserRole.BUYER, UserRole.SELLER, UserRole.ADMIN, UserRole.INSPECTOR]}>
             <NotificationsPage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/profile" element={
+          <ProtectedRoute allowedRoles={[UserRole.BUYER, UserRole.SELLER, UserRole.ADMIN, UserRole.INSPECTOR]}>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/change-password" element={
+          <ProtectedRoute allowedRoles={[UserRole.BUYER, UserRole.SELLER, UserRole.ADMIN, UserRole.INSPECTOR]}>
+            <ChangePasswordPage />
           </ProtectedRoute>
         } />
         

@@ -248,7 +248,7 @@ export interface CreateListingRequest {
 
 export interface CreateOrderRequest {
   listingId: number;
-  useDeposit: boolean;
+  depositRequired: boolean;
   shippingNote?: string;
 }
 

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown, Avatar } from 'antd';
 import type { MenuProps } from 'antd';
-import { DownOutlined, UserOutlined, DashboardOutlined, LogoutOutlined, ShoppingOutlined, HeartOutlined, FileTextOutlined, WarningOutlined, InboxOutlined } from '@ant-design/icons';
+import { DownOutlined, UserOutlined, DashboardOutlined, LogoutOutlined, ShoppingOutlined, HeartOutlined, FileTextOutlined, WarningOutlined, InboxOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useAuthStore } from '../../store/auth';
 import { ROUTES } from '../../config/constants';
 import { UserRole } from '../../types';
@@ -33,6 +33,12 @@ export const Header = () => {
         label: 'Dashboard',
         icon: <DashboardOutlined />,
         onClick: () => navigate(getDashboardRoute()),
+      },
+      {
+        key: 'profile',
+        label: 'Hồ sơ của tôi',
+        icon: <IdcardOutlined />,
+        onClick: () => navigate('/profile'),
       },
     ];
 
