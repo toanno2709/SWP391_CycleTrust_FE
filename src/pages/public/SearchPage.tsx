@@ -5,11 +5,15 @@ import { useCatalogStore } from '../../store/catalog';
 import type { Listing } from '../../types';
 import { ListingStatus } from '../../types';
 import { BikeCard } from '../../components/listing/BikeCard';
-import { Loading, Input } from '../../components/ui';
+import { Loading, Input, Pagination } from '../../components/ui';
 
 export const SearchPage = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const pageSize = 12;
   const [filters, setFilters] = useState({
     search: '',
     brandId: undefined as number | undefined,
@@ -25,14 +29,22 @@ export const SearchPage = () => {
   }, [fetchAll]);
 
   useEffect(() => {
+    setCurrentPage(1); // Reset to page 1 when filters change
+  }, [filters]);
+
+  useEffect(() => {
     const fetchListings = async () => {
       setLoading(true);
       try {
-        const results = await listingService.getAll({
+        const results = await listingService.getAllPaged({
+          pageNumber: currentPage,
+          pageSize,
           status: ListingStatus.VERIFIED,
           ...filters,
         });
-        setListings(results);
+        setListings(results.items);
+        setTotalPages(results.totalPages);
+        setTotalCount(results.totalCount);
       } catch (error) {
         console.error('Failed to fetch listings:', error);
       } finally {
@@ -41,7 +53,7 @@ export const SearchPage = () => {
     };
 
     fetchListings();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   return (
     <MainLayout>
@@ -150,18 +162,29 @@ export const SearchPage = () => {
           <div className="mb-6">
             <h1 className="text-3xl font-black mb-2">Tìm kiếm xe đạp</h1>
             <p className="text-slate-600 dark:text-slate-400">
-              Tìm thấy {listings.length} kết quả
+              Tìm thấy {totalCount} kết quả
             </p>
           </div>
 
           {loading ? (
             <Loading />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {listings.map(listing => (
-                <BikeCard key={listing.id} listing={listing} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {listings.map(listing => (
+                  <BikeCard key={listing.id} listing={listing} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  className="my-8"
+                />
+              )}
+            </>
           )}
 
           {!loading && listings.length === 0 && (

@@ -4,3 +4,4 @@ export { Textarea } from './Textarea';
 export { Card } from './Card';
 export { Loading } from './Loading';
 export { Modal } from './Modal';
+export { Pagination } from './Pagination';

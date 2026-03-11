@@ -10,6 +10,21 @@ import { ImageUploader } from '../../components/listing/ImageUploader';
 import { VideoUploader } from '../../components/listing/VideoUploader';
 import { useForm } from '../../hooks/useForm';
 
+// Format price with dot separators
+const formatPrice = (value: string): string => {
+  // Remove all non-digit characters
+  const numbers = value.replace(/\D/g, '');
+  if (!numbers) return '';
+  // Add dot separators
+  return Number(numbers).toLocaleString('vi-VN');
+};
+
+// Parse price to number
+const parsePrice = (value: string): number => {
+  const numbers = value.replace(/\D/g, '');
+  return numbers ? Number(numbers) : 0;
+};
+
 export const EditListingPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -18,6 +33,7 @@ export const EditListingPage = () => {
   const [savingDraft, setSavingDraft] = useState(false);
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [displayPrice, setDisplayPrice] = useState('');
   const { brands, categories, sizes, fetchAll } = useCatalogStore();
 
   const { values, errors, handleChange, setValues } = useForm({
@@ -36,6 +52,19 @@ export const EditListingPage = () => {
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const formatted = formatPrice(inputValue);
+    setDisplayPrice(formatted);
+    // Update actual value
+    handleChange({
+      target: {
+        name: 'priceAmount',
+        value: parsePrice(inputValue).toString(),
+      },
+    } as any);
+  };
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -63,6 +92,9 @@ export const EditListingPage = () => {
           conditionNote: data.conditionNote || '',
           yearModel: data.yearModel?.toString() || '',
         });
+        
+        // Format price for display
+        setDisplayPrice(formatPrice(data.priceAmount.toString()));
         
         // Load images and video
         const images = data.media?.filter(m => m.type === 'IMAGE').map(m => m.url) || [];
@@ -304,6 +336,8 @@ export const EditListingPage = () => {
                 value={values.yearModel}
                 onChange={handleChange}
                 placeholder="2022"
+                min="1"
+                max="2027"
               />
 
               <Input
@@ -329,11 +363,11 @@ export const EditListingPage = () => {
             <Input
               label="Giá (VNĐ)"
               name="priceAmount"
-              type="number"
-              value={values.priceAmount}
-              onChange={handleChange}
+              type="text"
+              value={displayPrice}
+              onChange={handlePriceChange}
               error={errors.priceAmount}
-              placeholder="50000000"
+              placeholder="50.000.000"
               required
             />
           </Card>

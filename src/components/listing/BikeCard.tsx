@@ -62,9 +62,12 @@ export const BikeCard = ({ listing }: BikeCardProps) => {
               {formatCurrency(listing.priceAmount, listing.currency)}
             </div>
             {listing.seller && (
-              <div className="flex items-center gap-1 text-sm">
-                <span className="material-symbols-outlined text-yellow-500 text-base">star</span>
-                <span className="font-bold">{listing.seller.ratingAvg.toFixed(1)}</span>
+              <div className="flex flex-col items-end text-sm">
+                <span className="text-xs text-slate-500">Người bán</span>
+                <div className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-yellow-500 text-base">star</span>
+                  <span className="font-bold">{listing.seller.ratingAvg.toFixed(1)}</span>
+                </div>
               </div>
             )}
           </div>

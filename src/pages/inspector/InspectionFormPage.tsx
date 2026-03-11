@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { MainLayout } from '../../layouts/MainLayout';
 import { listingService } from '../../services/listing';
-import { cloudinaryService } from '../../services/cloudinary';
+import { uploadService } from '../../services/upload';
 import type { Listing, CreateInspectionRequest } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { Card, Loading, Button } from '../../components/ui';
@@ -94,22 +94,6 @@ export const InspectionFormPage = () => {
     }
   };
 
-  const handleUploadReport = async () => {
-    if (!reportFile) return;
-
-    try {
-      setUploading(true);
-      const result = await cloudinaryService.uploadImage(reportFile);
-      setReportUrl(result.url);
-      toast.success('Upload báo cáo thành công!');
-      setReportFile(null);
-    } catch (error) {
-      toast.error('Upload thất bại, vui lòng thử lại');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -127,17 +111,44 @@ export const InspectionFormPage = () => {
 
     try {
       setSubmitting(true);
+      
+      // Upload file if selected and not already uploaded
+      let finalReportUrl = reportUrl;
+      if (reportFile) {
+        try {
+          setUploading(true);
+          const uploadedUrl = await uploadService.uploadInspectionReport(reportFile);
+          finalReportUrl = uploadedUrl;
+          setReportUrl(uploadedUrl);
+          setReportFile(null);
+          toast.success('Upload file thành công');
+        } catch (error) {
+          toast.error('Upload file thất bại');
+          return;
+        } finally {
+          setUploading(false);
+        }
+      }
+
       const requestData: CreateInspectionRequest = {
         summary: summary.trim(),
         checklistJson: JSON.stringify(checklist),
-        reportUrl: reportUrl.trim() || undefined,
+        reportUrl: finalReportUrl.trim() || undefined,
       };
 
-      await listingService.createInspection(Number(id), requestData);
-      toast.success('Tạo báo cáo kiểm định thành công!');
+      // Check if inspection exists to determine create or update
+      const isUpdate = !!(listing && listing.status === 'VERIFIED' && listing.inspection);
+
+      if (isUpdate) {
+        await listingService.updateInspection(Number(id), requestData);
+        toast.success('Cập nhật báo cáo kiểm định thành công!');
+      } else {
+        await listingService.createInspection(Number(id), requestData);
+        toast.success('Tạo báo cáo kiểm định thành công!');
+      }
       navigate(ROUTES.INSPECTOR_LISTINGS);
     } catch (error: any) {
-      toast.error(error.message || 'Tạo báo cáo thất bại');
+      toast.error(error.message || 'Thao tác thất bại');
     } finally {
       setSubmitting(false);
     }
@@ -166,14 +177,14 @@ export const InspectionFormPage = () => {
     );
   }
 
-  const isReadOnly = !!(listing.status === 'VERIFIED' && listing.inspection);
+  const isReadOnly = false; // Allow editing for inspectors and admins
 
   return (
     <MainLayout>
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-4xl font-black">
-            {isReadOnly ? 'Báo cáo kiểm định' : 'Tạo báo cáo kiểm định'}
+            {listing.inspection ? 'Chỉnh sửa báo cáo kiểm định' : 'Tạo báo cáo kiểm định'}
           </h1>
           <button
             onClick={() => navigate(ROUTES.INSPECTOR_LISTINGS)}
@@ -184,7 +195,6 @@ export const InspectionFormPage = () => {
           </button>
         </div>
 
-        {/* Listing Info */}
         <Card className="mb-6">
           <div className="flex items-center gap-4">
             <img
@@ -205,7 +215,6 @@ export const InspectionFormPage = () => {
         </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Checklist */}
           <Card>
             <h3 className="text-xl font-bold mb-4">Checklist kiểm định</h3>
             <div className="space-y-4">
@@ -276,37 +285,29 @@ export const InspectionFormPage = () => {
                   Upload file PDF hoặc ảnh báo cáo kiểm định (tối đa 10MB)
                 </p>
                 
-                {!isReadOnly && (
-                  <div className="space-y-3">
-                    <div className="flex gap-2">
-                      <input
-                        type="file"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        onChange={handleFileSelect}
-                        className="flex-1 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 dark:bg-slate-900"
-                      />
-                      {reportFile && (
-                        <Button
-                          type="button"
-                          onClick={handleUploadReport}
-                          isLoading={uploading}
-                          disabled={uploading}
-                        >
-                          <span className="material-symbols-outlined text-lg">upload</span>
-                          Upload
-                        </Button>
-                      )}
-                    </div>
-                    {reportFile && !uploading && (
-                      <p className="text-sm text-slate-600">
-                        <span className="material-symbols-outlined text-sm align-middle">description</span>
-                        {reportFile.name} ({(reportFile.size / 1024 / 1024).toFixed(2)} MB)
-                      </p>
-                    )}
-                  </div>
-                )}
+                <div className="space-y-3">
+                  <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    onChange={handleFileSelect}
+                    className="w-full px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 dark:bg-slate-900"
+                  />
+                  {reportFile && !uploading && (
+                    <p className="text-sm text-slate-600">
+                      <span className="material-symbols-outlined text-sm align-middle">description</span>
+                      {reportFile.name} ({(reportFile.size / 1024 / 1024).toFixed(2)} MB)
+                      <span className="text-green-600 ml-2">- Sẽ tự động upload khi submit</span>
+                    </p>
+                  )}
+                  {uploading && (
+                    <p className="text-sm text-blue-600">
+                      <span className="material-symbols-outlined text-sm align-middle animate-spin">sync</span>
+                      Đang upload file...
+                    </p>
+                  )}
+                </div>
                 
-                {reportUrl && (
+                {reportUrl && !reportFile && (
                   <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                     <p className="text-sm text-green-800 dark:text-green-300 flex items-center gap-2">
                       <span className="material-symbols-outlined text-lg">check_circle</span>
@@ -326,27 +327,25 @@ export const InspectionFormPage = () => {
             </div>
           </Card>
 
-          {!isReadOnly && (
-            <div className="flex gap-4">
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                isLoading={submitting}
-                className="flex-1"
-              >
-                Xác nhận kiểm định
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                size="lg"
-                onClick={() => navigate(ROUTES.INSPECTOR_LISTINGS)}
-              >
-                Hủy
-              </Button>
-            </div>
-          )}
+          <div className="flex gap-4">
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              isLoading={submitting || uploading}
+              className="flex-1"
+            >
+              {listing.inspection ? 'Cập nhật kiểm định' : 'Xác nhận kiểm định'}
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="lg"
+              onClick={() => navigate(ROUTES.INSPECTOR_LISTINGS)}
+            >
+              Hủy
+            </Button>
+          </div>
         </form>
       </div>
     </MainLayout>

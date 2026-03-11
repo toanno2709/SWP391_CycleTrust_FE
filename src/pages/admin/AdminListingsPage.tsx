@@ -22,7 +22,7 @@ export const AdminListingsPage = () => {
   const fetchListings = async (status?: ListingStatus) => {
     setLoading(true);
     try {
-      const data = await listingService.getAll({ status });
+      const data = await listingService.getAllForAdmin({ status });
       setListings(data);
     } catch (error) {
       message.error('Không thể tải danh sách listings');

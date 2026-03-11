@@ -18,6 +18,7 @@ import {
   CONDITION_COLORS,
   type Checklist 
 } from '../../config/inspectionChecklist';
+import { SellerReviews } from '../../components/listing/SellerReviews';
 
 export const ListingDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -147,7 +148,7 @@ export const ListingDetailPage = () => {
       <div className="max-w-7xl mx-auto px-6 lg:px-20 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="space-y-4">
-            <div className="aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+            <div className="aspect-4/3 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
               <img
                 src={images[selectedImage] || 'https://via.placeholder.com/800x600'}
                 alt={listing.title}
@@ -305,7 +306,6 @@ export const ListingDetailPage = () => {
                   </p>
                 </div>
                 
-                {/* Checklist Details */}
                 {listing.inspection.checklistJson && (() => {
                   try {
                     const checklist = JSON.parse(listing.inspection.checklistJson as any) as Checklist;
@@ -382,6 +382,14 @@ export const ListingDetailPage = () => {
             </div>
           </div>
         </div>
+
+        {listing.seller && (
+          <div className="mt-12">
+            <SellerReviews 
+              sellerId={listing.sellerId} 
+            />
+          </div>
+        )}
       </div>
 
       <Modal

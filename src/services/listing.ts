@@ -5,7 +5,8 @@ import type {
   CreateListingRequest,
   ListingStatus,
   CreateInspectionRequest,
-  Inspection
+  Inspection,
+  PaginatedResponse
 } from '../types';
 
 export const listingService = {
@@ -21,6 +22,33 @@ export const listingService = {
     return response.data || [];
   },
 
+  async getAllForAdmin(params?: {
+    status?: ListingStatus;
+  }): Promise<Listing[]> {
+    const response = await apiClient.get<ApiResponse<Listing[]>>('/listings/admin', { params });
+    return response.data || [];
+  },
+
+  async getMyInspections(): Promise<Listing[]> {
+    const response = await apiClient.get<ApiResponse<Listing[]>>('/listings/inspector/my-inspections');
+    return response.data || [];
+  },
+
+  async getAllPaged(params?: {
+    pageNumber?: number;
+    pageSize?: number;
+    status?: ListingStatus;
+    brandId?: number;
+    categoryId?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    search?: string;
+  }): Promise<PaginatedResponse<Listing>> {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Listing>>>('/listings/paged', { params });
+    if (!response.data) throw new Error('Failed to fetch listings');
+    return response.data;
+  },
+
   async getById(id: number): Promise<Listing> {
     const response = await apiClient.get<ApiResponse<Listing>>(`/listings/${id}`);
     if (!response.data) throw new Error('Listing not found');
@@ -30,6 +58,15 @@ export const listingService = {
   async getMyListings(): Promise<Listing[]> {
     const response = await apiClient.get<ApiResponse<Listing[]>>('/listings/my');
     return response.data || [];
+  },
+
+  async getMyListingsPaged(params?: {
+    pageNumber?: number;
+    pageSize?: number;
+  }): Promise<PaginatedResponse<Listing>> {
+    const response = await apiClient.get<ApiResponse<PaginatedResponse<Listing>>>('/listings/my/paged', { params });
+    if (!response.data) throw new Error('Failed to fetch my listings');
+    return response.data;
   },
 
   async create(data: CreateListingRequest): Promise<Listing> {
@@ -75,6 +112,12 @@ export const listingService = {
   async createInspection(listingId: number, data: CreateInspectionRequest): Promise<Inspection> {
     const response = await apiClient.post<ApiResponse<Inspection>>(`/listings/${listingId}/inspection`, data);
     if (!response.data) throw new Error('Failed to create inspection');
+    return response.data;
+  },
+
+  async updateInspection(listingId: number, data: CreateInspectionRequest): Promise<Inspection> {
+    const response = await apiClient.put<ApiResponse<Inspection>>(`/listings/${listingId}/inspection`, data);
+    if (!response.data) throw new Error('Failed to update inspection');
     return response.data;
   },
 };

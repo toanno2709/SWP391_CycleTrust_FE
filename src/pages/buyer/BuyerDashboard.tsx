@@ -73,7 +73,6 @@ export const BuyerDashboard = () => {
           </Card>
         </div>
 
-        {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           <Link to="/buyer/wishlist">
             <Card className="hover:shadow-lg transition-shadow cursor-pointer">

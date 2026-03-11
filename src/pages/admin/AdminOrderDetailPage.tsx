@@ -119,7 +119,6 @@ const AdminOrderDetailPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4">
-        {/* Header */}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 text-blue-600 hover:text-blue-800 flex items-center"
@@ -135,7 +134,6 @@ const AdminOrderDetailPage: React.FC = () => {
             </span>
           </div>
 
-          {/* Order Info Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <h2 className="text-lg font-semibold mb-3">Thông tin đơn hàng</h2>
@@ -210,7 +208,6 @@ const AdminOrderDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Dispute Info */}
           {order.status === 'DISPUTED' && (
             <div className="bg-orange-50 border border-orange-200 rounded p-4 mb-6">
               <div className="flex items-center justify-between">
@@ -230,7 +227,6 @@ const AdminOrderDetailPage: React.FC = () => {
             </div>
           )}
 
-          {/* Order Timeline */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-3">Trạng thái đơn hàng</h2>
             <div className="relative">
@@ -264,7 +260,6 @@ const AdminOrderDetailPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Payment History */}
           {order.payments && order.payments.length > 0 && (
             <div>
               <h2 className="text-lg font-semibold mb-3">Lịch sử thanh toán</h2>

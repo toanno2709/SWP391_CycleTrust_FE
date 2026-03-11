@@ -380,7 +380,6 @@ export const AdminUsersPage = () => {
 
         <Tabs items={tabItems} />
 
-        {/* Create User Modal */}
         <Modal
           title="Tạo User mới"
           open={createModalOpen}
@@ -456,7 +455,6 @@ export const AdminUsersPage = () => {
           </Form>
         </Modal>
 
-        {/* Edit User Modal */}
         <Modal
           title="Chỉnh sửa User"
           open={editModalOpen}

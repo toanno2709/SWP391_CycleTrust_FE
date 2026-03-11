@@ -6,18 +6,23 @@ import type { Listing, ListingStatus } from '../../types';
 import { formatCurrency } from '../../utils/format';
 import { LISTING_STATUS_LABELS } from '../../config/constants';
 import { Card, Loading } from '../../components/ui';
+import { InspectionDetailModal } from '../../components/listing/InspectionDetailModal';
 
 const TABS = [
   { id: 'all', label: 'Tất cả', status: null },
   { id: 'pending', label: 'Chờ kiểm định', status: 'APPROVED' as ListingStatus },
   { id: 'inspecting', label: 'Đang kiểm tra', status: 'UNDER_INSPECTION' as ListingStatus },
   { id: 'verified', label: 'Đã xác thực', status: 'VERIFIED' as ListingStatus },
+  { id: 'myInspections', label: 'Đã kiểm định của tôi', status: 'MY_INSPECTIONS' as any },
 ];
 
 export const InspectorListingsPage = () => {
   const [listings, setListings] = useState<Listing[]>([]);
+  const [myInspections, setMyInspections] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchListings();
@@ -26,9 +31,12 @@ export const InspectorListingsPage = () => {
   const fetchListings = async () => {
     try {
       setLoading(true);
-      // Fetch listings that are approved or already inspected
-      const data = await listingService.getAll();
-      setListings(data);
+      const [allData, inspectedData] = await Promise.all([
+        listingService.getAll(),
+        listingService.getMyInspections()
+      ]);
+      setListings(allData);
+      setMyInspections(inspectedData);
     } catch (error) {
       console.error('Failed to fetch listings:', error);
     } finally {
@@ -36,10 +44,21 @@ export const InspectorListingsPage = () => {
     }
   };
 
+  const handleViewInspection = (listing: Listing) => {
+    setSelectedListing(listing);
+    setModalOpen(true);
+  };
+
   const currentTab = TABS.find(t => t.id === activeTab);
-  const filteredListings = currentTab?.status 
-    ? listings.filter(l => l.status === currentTab.status)
-    : listings.filter(l => ['APPROVED', 'UNDER_INSPECTION', 'VERIFIED'].includes(l.status));
+  let filteredListings: Listing[];
+  
+  if (activeTab === 'myInspections') {
+    filteredListings = myInspections;
+  } else if (currentTab?.status) {
+    filteredListings = listings.filter(l => l.status === currentTab.status);
+  } else {
+    filteredListings = listings.filter(l => ['APPROVED', 'UNDER_INSPECTION', 'VERIFIED'].includes(l.status));
+  }
 
   return (
     <MainLayout>
@@ -55,7 +74,6 @@ export const InspectorListingsPage = () => {
           </Link>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-8 border-b border-slate-200 dark:border-slate-800">
           {TABS.map(tab => (
             <button
@@ -68,11 +86,15 @@ export const InspectorListingsPage = () => {
               }`}
             >
               {tab.label}
-              {tab.status && (
+              {tab.id === 'myInspections' ? (
+                <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800">
+                  {myInspections.length}
+                </span>
+              ) : tab.status ? (
                 <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-slate-100 dark:bg-slate-800">
                   {listings.filter(l => l.status === tab.status).length}
                 </span>
-              )}
+              ) : null}
             </button>
           ))}
         </div>
@@ -154,13 +176,13 @@ export const InspectorListingsPage = () => {
                       )}
 
                       {listing.status === 'VERIFIED' && listing.inspection && (
-                        <Link
-                          to={`/inspector/listings/${listing.id}/inspect`}
-                          className="text-green-600 hover:text-green-700 font-semibold flex items-center gap-1"
+                        <button
+                          onClick={() => handleViewInspection(listing)}
+                          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold flex items-center gap-2"
                         >
+                          <span className="material-symbols-outlined text-lg">visibility</span>
                           Xem báo cáo
-                          <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                        </Link>
+                        </button>
                       )}
                     </div>
                   </div>
@@ -170,6 +192,12 @@ export const InspectorListingsPage = () => {
           </div>
         )}
       </div>
+
+      <InspectionDetailModal 
+        listing={selectedListing}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+      />
     </MainLayout>
   );
 };

@@ -115,7 +115,7 @@ export const VNPayReturnPage = () => {
               <Button
                 type="primary"
                 key="orders"
-                onClick={() => navigate('/orders')}
+                onClick={() => navigate(`/buyer/orders/${paymentResult.orderId}`)}
               >
                 Xem đơn hàng
               </Button>,

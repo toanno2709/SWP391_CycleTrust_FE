@@ -61,7 +61,6 @@ export const ProfilePage = () => {
       <div className="max-w-4xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold mb-8">Thông tin cá nhân</h1>
 
-        {/* Avatar Upload */}
         <Card className="mb-6">
           <div className="flex flex-col items-center">
             <Avatar
@@ -88,7 +87,6 @@ export const ProfilePage = () => {
           </div>
         </Card>
 
-        {/* Profile Information */}
         <Card title="Thông tin tài khoản" className="mb-6">
           <Form
             form={profileForm}
@@ -138,7 +136,6 @@ export const ProfilePage = () => {
           </Form>
         </Card>
 
-        {/* Security */}
         <Card title="Bảo mật">
           <div className="flex items-center justify-between">
             <div>

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Select, DatePicker, Space } from 'antd';
+import { Card, Row, Col, Statistic, Select, DatePicker, Space, Badge } from 'antd';
 import { 
   ShoppingOutlined, 
   UserOutlined, 
   DollarOutlined, 
   RiseOutlined,
-  FallOutlined 
+  FallOutlined,
+  BellOutlined 
 } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
 import {
   LineChart,
   Line,
@@ -32,6 +34,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 export const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('monthly');
   const [dateRange, setDateRange] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -71,6 +74,12 @@ export const AdminDashboard = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <Space>
+          <Badge count={0} showZero={false}>
+            <BellOutlined 
+              className="text-2xl cursor-pointer hover:text-blue-600 transition"
+              onClick={() => navigate('/notifications')}
+            />
+          </Badge>
           <Select
             value={period}
             onChange={(value) => setPeriod(value)}
@@ -89,7 +98,6 @@ export const AdminDashboard = () => {
         </Space>
       </div>
 
-      {/* Summary Cards */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} sm={12} lg={6}>
           <Card>
@@ -180,7 +188,6 @@ export const AdminDashboard = () => {
         </Col>
       </Row>
 
-      {/* Charts Row 1 */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} lg={16}>
           <Card title="Biểu đồ Doanh thu" className="h-full">
@@ -238,7 +245,6 @@ export const AdminDashboard = () => {
         </Col>
       </Row>
 
-      {/* Charts Row 2 */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} lg={12}>
           <Card title="Tăng trưởng Người dùng">
@@ -290,7 +296,6 @@ export const AdminDashboard = () => {
         </Col>
       </Row>
 
-      {/* Recent Activities */}
       <Row gutter={16}>
         <Col xs={24}>
           <Card title="Hoạt động gần đây">

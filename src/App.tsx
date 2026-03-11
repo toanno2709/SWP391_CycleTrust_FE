@@ -116,7 +116,6 @@ function App() {
           </ProtectedRoute>
         } />
         
-        {/* VNPay Payment Return */}
         <Route path="/payment/vnpay-return" element={<VNPayReturnPage />} />
 
         <Route

@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { Modal, Input, Button } from 'antd';
 import { MainLayout } from '../../layouts/MainLayout';
 import { disputeService } from '../../services/dispute';
 import type { Dispute } from '../../services/dispute';
 import { useAuthStore } from '../../store/auth';
 import { UserRole } from '../../types';
 import { formatDateTime } from '../../utils/format';
+
+const { TextArea } = Input;
 
 const DisputeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,8 +60,7 @@ const DisputeDetailPage: React.FC = () => {
     }
   };
 
-  const handleAssign = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAssign = async () => {
     if (!assigneeId || !id) return;
 
     try {
@@ -75,8 +77,7 @@ const DisputeDetailPage: React.FC = () => {
     }
   };
 
-  const handleResolve = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleResolve = async () => {
     if (!resolution.trim() || !id) return;
 
     try {
@@ -147,7 +148,6 @@ const DisputeDetailPage: React.FC = () => {
     <MainLayout>
       <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 text-blue-600 hover:text-blue-800 flex items-center"
@@ -213,98 +213,87 @@ const DisputeDetailPage: React.FC = () => {
           )}
         </div>
 
-        {/* Action Buttons */}
         {(canAssign || canResolve) && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-lg font-semibold mb-4">Hành động</h2>
             <div className="flex gap-3">
               {canAssign && (
-                <button
-                  onClick={() => setShowAssignForm(!showAssignForm)}
-                  className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+                <Button
+                  type="primary"
+                  style={{ backgroundColor: '#ca8a04' }}
+                  onClick={() => setShowAssignForm(true)}
                 >
                   Phân công xử lý
-                </button>
+                </Button>
               )}
               {canResolve && (
-                <button
-                  onClick={() => setShowResolveForm(!showResolveForm)}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                <Button
+                  type="primary"
+                  style={{ backgroundColor: '#16a34a' }}
+                  onClick={() => setShowResolveForm(true)}
                 >
                   Giải quyết tranh chấp
-                </button>
+                </Button>
               )}
             </div>
-
-            {/* Assign Form */}
-            {showAssignForm && (
-              <form onSubmit={handleAssign} className="mt-4 p-4 bg-yellow-50 rounded border">
-                <label className="block text-sm font-medium mb-2">
-                  ID người xử lý (Inspector/Admin):
-                </label>
-                <input
-                  type="number"
-                  value={assigneeId}
-                  onChange={(e) => setAssigneeId(e.target.value)}
-                  className="w-full px-3 py-2 border rounded mb-3"
-                  placeholder="Nhập user ID"
-                  required
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50"
-                  >
-                    {submitting ? 'Đang xử lý...' : 'Xác nhận phân công'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAssignForm(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  >
-                    Hủy
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Resolve Form */}
-            {showResolveForm && (
-              <form onSubmit={handleResolve} className="mt-4 p-4 bg-green-50 rounded border">
-                <label className="block text-sm font-medium mb-2">
-                  Kết quả giải quyết:
-                </label>
-                <textarea
-                  value={resolution}
-                  onChange={(e) => setResolution(e.target.value)}
-                  className="w-full px-3 py-2 border rounded mb-3"
-                  rows={4}
-                  placeholder="Nhập kết quả giải quyết..."
-                  required
-                />
-                <div className="flex gap-2">
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                  >
-                    {submitting ? 'Đang xử lý...' : 'Xác nhận giải quyết'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowResolveForm(false)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400"
-                  >
-                    Hủy
-                  </button>
-                </div>
-              </form>
-            )}
           </div>
         )}
 
-        {/* Events Timeline */}
+        <Modal
+          title="Phân công xử lý tranh chấp"
+          open={showAssignForm}
+          onOk={handleAssign}
+          onCancel={() => {
+            setShowAssignForm(false);
+            setAssigneeId('');
+          }}
+          okText="Xác nhận"
+          cancelText="Hủy"
+          confirmLoading={submitting}
+        >
+          <div className="py-4">
+            <label className="block text-sm font-medium mb-2">
+              ID người xử lý (Inspector/Admin):
+            </label>
+            <Input
+              type="number"
+              value={assigneeId}
+              onChange={(e) => setAssigneeId(e.target.value)}
+              placeholder="Nhập user ID"
+              required
+            />
+          </div>
+        </Modal>
+
+        <Modal
+          title="Giải quyết tranh chấp"
+          open={showResolveForm}
+          onOk={handleResolve}
+          onCancel={() => {
+            setShowResolveForm(false);
+            setResolution('');
+          }}
+          okText="Xác nhận giải quyết"
+          cancelText="Hủy"
+          confirmLoading={submitting}
+          okButtonProps={{ danger: false, style: { backgroundColor: '#16a34a' } }}
+          width={600}
+        >
+          <div className="py-4">
+            <label className="block text-sm font-medium mb-2">
+              Kết quả giải quyết:
+            </label>
+            <TextArea
+              value={resolution}
+              onChange={(e) => setResolution(e.target.value)}
+              rows={6}
+              placeholder="Nhập kết quả giải quyết chi tiết..."
+              showCount
+              maxLength={1000}
+            />
+          </div>
+        </Modal>
+
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-lg font-semibold mb-4">Lịch sử hoạt động</h2>
           {dispute.events && dispute.events.length > 0 ? (
@@ -332,26 +321,27 @@ const DisputeDetailPage: React.FC = () => {
           )}
         </div>
 
-        {/* Add Comment Form */}
         {canAddComment && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-lg font-semibold mb-4">Thêm bình luận</h2>
             <form onSubmit={handleAddComment}>
-              <textarea
+              <TextArea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-                className="w-full px-3 py-2 border rounded mb-3"
                 rows={4}
                 placeholder="Nhập bình luận của bạn..."
-                required
+                showCount
+                maxLength={500}
+                className="mb-3"
               />
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={submitting}
+                size="large"
               >
-                {submitting ? 'Đang gửi...' : 'Gửi bình luận'}
-              </button>
+                Gửi bình luận
+              </Button>
             </form>
           </div>
         )}

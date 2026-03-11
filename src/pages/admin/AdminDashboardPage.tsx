@@ -114,7 +114,6 @@ export default function AdminDashboardPage() {
         </Space>
       </div>
 
-      {/* Summary Cards */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} sm={12} lg={6}>
           <Card>
@@ -179,7 +178,6 @@ export default function AdminDashboardPage() {
         </Col>
       </Row>
 
-      {/* Charts Row 1 */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} lg={16}>
           <Card title="Biểu đồ Doanh thu" className="h-full">
@@ -237,7 +235,6 @@ export default function AdminDashboardPage() {
         </Col>
       </Row>
 
-      {/* Charts Row 2 */}
       <Row gutter={16} className="mb-6">
         <Col xs={24} lg={12}>
           <Card title="Tăng trưởng Người dùng">
@@ -289,7 +286,6 @@ export default function AdminDashboardPage() {
         </Col>
       </Row>
 
-      {/* Recent Activities */}
       <Row gutter={16}>
         <Col xs={24}>
           <Card title="Hoạt động gần đây">

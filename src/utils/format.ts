@@ -12,15 +12,31 @@ export const formatCurrency = (amount: number, currency: string = 'VND'): string
 };
 
 export const formatDate = (date: string | Date): string => {
+  // If date is a string without timezone info, treat it as UTC
+  let dateObj: Date;
+  if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+    dateObj = new Date(date + 'Z');
+  } else {
+    dateObj = new Date(date);
+  }
+  
   return new Intl.DateTimeFormat('vi-VN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     timeZone: 'Asia/Ho_Chi_Minh'
-  }).format(new Date(date));
+  }).format(dateObj);
 };
 
 export const formatDateTime = (date: string | Date): string => {
+  // If date is a string without timezone info, treat it as UTC
+  let dateObj: Date;
+  if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+    dateObj = new Date(date + 'Z');
+  } else {
+    dateObj = new Date(date);
+  }
+  
   return new Intl.DateTimeFormat('vi-VN', {
     year: 'numeric',
     month: '2-digit',
@@ -29,12 +45,20 @@ export const formatDateTime = (date: string | Date): string => {
     minute: '2-digit',
     second: '2-digit',
     timeZone: 'Asia/Ho_Chi_Minh'
-  }).format(new Date(date));
+  }).format(dateObj);
 };
 
 // Helper to convert UTC date string to Vietnam time string
 export const toVietnamTime = (date: string | Date): string => {
-  return new Date(date).toLocaleString('vi-VN', {
+  // If date is a string without timezone info, treat it as UTC
+  let dateObj: Date;
+  if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+    dateObj = new Date(date + 'Z');
+  } else {
+    dateObj = new Date(date);
+  }
+  
+  return dateObj.toLocaleString('vi-VN', {
     timeZone: 'Asia/Ho_Chi_Minh',
     year: 'numeric',
     month: '2-digit',
@@ -46,7 +70,15 @@ export const toVietnamTime = (date: string | Date): string => {
 };
 
 export const toVietnamDate = (date: string | Date): string => {
-  return new Date(date).toLocaleDateString('vi-VN', {
+  // If date is a string without timezone info, treat it as UTC
+  let dateObj: Date;
+  if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
+    dateObj = new Date(date + 'Z');
+  } else {
+    dateObj = new Date(date);
+  }
+  
+  return dateObj.toLocaleDateString('vi-VN', {
     timeZone: 'Asia/Ho_Chi_Minh',
     year: 'numeric',
     month: '2-digit',

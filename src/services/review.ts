@@ -4,6 +4,8 @@ import type { ApiResponse } from '../types';
 export interface Review {
   id: number;
   orderId: number;
+  buyerId: number;
+  buyerName: string;
   sellerId: number;
   sellerName: string;
   rating: number;

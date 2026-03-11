@@ -5,18 +5,32 @@ import { listingService } from '../../services/listing';
 import type { Listing } from '../../types';
 import { formatCurrency, formatDateTime } from '../../utils/format';
 import { LISTING_STATUS_LABELS, ROUTES } from '../../config/constants';
-import { Card, Loading, Button } from '../../components/ui';
+import { Card, Loading, Button, Pagination } from '../../components/ui';
 
 export const SellerDashboard = () => {
   const navigate = useNavigate();
   const [listings, setListings] = useState<Listing[]>([]);
+  const [allListings, setAllListings] = useState<Listing[]>([]); // For stats
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const data = await listingService.getMyListings();
-        setListings(data);
+        setLoading(true);
+        // Fetch all listings for stats
+        const allData = await listingService.getMyListings();
+        setAllListings(allData);
+        
+        // Fetch paginated listings
+        const pagedData = await listingService.getMyListingsPaged({
+          pageNumber: currentPage,
+          pageSize,
+        });
+        setListings(pagedData.items);
+        setTotalPages(pagedData.totalPages);
       } catch (error) {
         console.error('Failed to fetch listings:', error);
       } finally {
@@ -25,7 +39,7 @@ export const SellerDashboard = () => {
     };
 
     fetchListings();
-  }, []);
+  }, [currentPage]);
 
   return (
     <MainLayout>
@@ -46,7 +60,7 @@ export const SellerDashboard = () => {
                 <span className="material-symbols-outlined text-green-600 text-2xl">inventory_2</span>
               </div>
               <div>
-                <p className="text-3xl font-black">{listings.length}</p>
+                <p className="text-3xl font-black">{allListings.length}</p>
                 <p className="text-sm text-slate-500">Tổng tin</p>
               </div>
             </div>
@@ -59,7 +73,7 @@ export const SellerDashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-black">
-                  {listings.filter(l => l.status === 'PENDING_APPROVAL').length}
+                  {allListings.filter(l => l.status === 'PENDING_APPROVAL').length}
                 </p>
                 <p className="text-sm text-slate-500">Chờ duyệt</p>
               </div>
@@ -73,7 +87,7 @@ export const SellerDashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-black">
-                  {listings.filter(l => l.status === 'VERIFIED').length}
+                  {allListings.filter(l => l.status === 'VERIFIED').length}
                 </p>
                 <p className="text-sm text-slate-500">Đã xác thực</p>
               </div>
@@ -87,7 +101,7 @@ export const SellerDashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-black">
-                  {listings.filter(l => l.status === 'REJECTED').length}
+                  {allListings.filter(l => l.status === 'REJECTED').length}
                 </p>
                 <p className="text-sm text-slate-500">Đã từ chối</p>
               </div>
@@ -101,7 +115,7 @@ export const SellerDashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-black">
-                  {listings.filter(l => l.status === 'SOLD').length}
+                  {allListings.filter(l => l.status === 'SOLD').length}
                 </p>
                 <p className="text-sm text-slate-500">Đã bán</p>
               </div>
@@ -181,6 +195,15 @@ export const SellerDashboard = () => {
                   </div>
                 </div>
               ))}
+              
+              {totalPages > 1 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  className="mt-6"
+                />
+              )}
             </div>
           )}
         </Card>
