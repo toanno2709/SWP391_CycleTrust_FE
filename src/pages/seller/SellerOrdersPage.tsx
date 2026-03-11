@@ -28,7 +28,7 @@ const ORDER_STATUS_COLORS: Record<OrderStatus, string> = {
   CONFIRMED: 'green',
   SHIPPING: 'processing',
   DELIVERED: 'success',
-  COMPLETED: 'default',
+  COMPLETED: 'success',
   CANCELED: 'error',
   DISPUTED: 'warning',
 };

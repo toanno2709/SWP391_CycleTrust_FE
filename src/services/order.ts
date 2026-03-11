@@ -51,6 +51,14 @@ export const orderService = {
     return response.data;
   },
 
+  async payRemaining(orderId: number): Promise<{ paymentUrl: string }> {
+    const response = await apiClient.post<ApiResponse<{ paymentUrl: string }>>(
+      `/orders/${orderId}/payment/remaining`
+    );
+    if (!response.data) throw new Error('Failed to initiate remaining payment');
+    return response.data;
+  },
+
   async updateStatus(orderId: number, status: OrderStatus, note?: string): Promise<Order> {
     const response = await apiClient.put<ApiResponse<Order>>(
       `/orders/${orderId}/status`,

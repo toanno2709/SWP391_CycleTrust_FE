@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Table, Tag, Button, Select, Space, Card, Statistic, Row, Col, Dropdown } from 'antd';
+import { Table, Button, Select, Space, Card, Statistic, Row, Col, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
 import { EyeOutlined, MoreOutlined } from '@ant-design/icons';
 import { orderService } from '../../services/order';
@@ -41,26 +41,6 @@ export default function AdminTransactionsPage() {
     loadOrders();
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'COMPLETED':
-        return 'green';
-      case 'CANCELED':
-        return 'red';
-      case 'DISPUTED':
-        return 'orange';
-      case 'SHIPPING':
-        return 'blue';
-      case 'DEPOSIT_PENDING':
-      case 'DEPOSIT_PAID':
-        return 'cyan';
-      case 'CONFIRMED':
-        return 'geekblue';
-      default:
-        return 'default';
-    }
-  };
-
   const totalRevenue = orders
     .filter(o => o.status === 'COMPLETED')
     .reduce((sum, o) => sum + o.priceAmount, 0);
@@ -98,11 +78,38 @@ export default function AdminTransactionsPage() {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>
-          {ORDER_STATUS_LABELS[status]}
-        </Tag>
-      ),
+      render: (status: string) => {
+        let colorClass = '';
+        switch (status) {
+          case 'COMPLETED':
+            colorClass = 'bg-green-100 text-green-700 border-green-300';
+            break;
+          case 'CANCELED':
+            colorClass = 'bg-red-100 text-red-700 border-red-300';
+            break;
+          case 'DISPUTED':
+            colorClass = 'bg-yellow-100 text-yellow-700 border-yellow-300';
+            break;
+          case 'SHIPPING':
+            colorClass = 'bg-blue-100 text-blue-700 border-blue-300';
+            break;
+          case 'DELIVERED':
+            colorClass = 'bg-indigo-100 text-indigo-700 border-indigo-300';
+            break;
+          case 'DEPOSIT_PENDING':
+          case 'DEPOSIT_PAID':
+          case 'CONFIRMED':
+            colorClass = 'bg-cyan-100 text-cyan-700 border-cyan-300';
+            break;
+          default:
+            colorClass = 'bg-gray-100 text-gray-700 border-gray-300';
+        }
+        return (
+          <span className={`px-2 py-1 rounded text-xs font-medium border ${colorClass}`}>
+            {ORDER_STATUS_LABELS[status]}
+          </span>
+        );
+      },
     },
     {
       title: 'Ngày tạo',

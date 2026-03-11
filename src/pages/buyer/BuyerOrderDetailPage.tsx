@@ -396,7 +396,7 @@ export default function BuyerOrderDetailPage() {
                   <button
                     onClick={async () => {
                       try {
-                        const { paymentUrl } = await orderService.payFull(order.id);
+                        const { paymentUrl } = await orderService.payRemaining(order.id);
                         window.location.href = paymentUrl;
                       } catch (error: any) {
                         message.error(error.message || "Lỗi khi tạo thanh toán");
