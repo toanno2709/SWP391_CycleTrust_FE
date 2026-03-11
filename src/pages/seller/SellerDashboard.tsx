@@ -10,7 +10,7 @@ import { Card, Loading, Button, Pagination } from '../../components/ui';
 export const SellerDashboard = () => {
   const navigate = useNavigate();
   const [listings, setListings] = useState<Listing[]>([]);
-  const [allListings, setAllListings] = useState<Listing[]>([]); // For stats
+  const [allListings, setAllListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,11 +20,9 @@ export const SellerDashboard = () => {
     const fetchListings = async () => {
       try {
         setLoading(true);
-        // Fetch all listings for stats
         const allData = await listingService.getMyListings();
         setAllListings(allData);
         
-        // Fetch paginated listings
         const pagedData = await listingService.getMyListingsPaged({
           pageNumber: currentPage,
           pageSize,

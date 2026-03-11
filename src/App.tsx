@@ -57,21 +57,16 @@ function App() {
   useEffect(() => {
     if (isAuthenticated) {
       console.log('🚀 Starting SignalR connections...');
-      // Start connections and wait for them to be ready
       Promise.all([
         signalRService.startNotificationConnection(),
         signalRService.startChatConnection()
       ]).then(() => {
         console.log('✅ All SignalR connections ready');
       });
-
-      // Don't cleanup connections on re-render
-      // Only stop on window unload
     }
   }, [isAuthenticated]);
 
   useEffect(() => {
-    // Cleanup on window unload
     const handleUnload = () => {
       signalRService.stopAllConnections();
     };

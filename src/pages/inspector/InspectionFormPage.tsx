@@ -42,7 +42,6 @@ export const InspectionFormPage = () => {
         const data = await listingService.getById(Number(id));
         setListing(data);
         
-        // If inspection exists, populate form
         if (data.inspection) {
           setSummary(data.inspection.summary);
           setReportUrl(data.inspection.reportUrl || '');
@@ -79,13 +78,11 @@ export const InspectionFormPage = () => {
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type (PDF or images)
       const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
       if (!validTypes.includes(file.type)) {
         toast.error('Chỉ chấp nhận file PDF hoặc ảnh (JPG, PNG)');
         return;
       }
-      // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
         toast.error('File không được vượt quá 10MB');
         return;
@@ -102,7 +99,6 @@ export const InspectionFormPage = () => {
       return;
     }
 
-    // Check if all items have condition
     const allItemsChecked = CHECKLIST_ITEMS.every(item => checklist[item.id].condition !== '');
     if (!allItemsChecked) {
       toast.error('Vui lòng đánh giá tình trạng tất cả các mục');
@@ -112,7 +108,6 @@ export const InspectionFormPage = () => {
     try {
       setSubmitting(true);
       
-      // Upload file if selected and not already uploaded
       let finalReportUrl = reportUrl;
       if (reportFile) {
         try {
@@ -136,7 +131,6 @@ export const InspectionFormPage = () => {
         reportUrl: finalReportUrl.trim() || undefined,
       };
 
-      // Check if inspection exists to determine create or update
       const isUpdate = !!(listing && listing.status === 'VERIFIED' && listing.inspection);
 
       if (isUpdate) {
@@ -177,7 +171,7 @@ export const InspectionFormPage = () => {
     );
   }
 
-  const isReadOnly = false; // Allow editing for inspectors and admins
+  const isReadOnly = false;
 
   return (
     <MainLayout>

@@ -12,13 +12,11 @@ class SignalRService {
     const token = authService.getToken();
     if (!token) return;
 
-    // If already connected, don't create new connection
     if (this.notificationConnection?.state === signalR.HubConnectionState.Connected) {
       console.log('✅ Notification Hub already connected');
       return;
     }
 
-    // If connection exists but disconnected, stop it first
     if (this.notificationConnection) {
       await this.notificationConnection.stop();
     }
@@ -43,13 +41,11 @@ class SignalRService {
     const token = authService.getToken();
     if (!token) return;
 
-    // If already connected, don't create new connection
     if (this.chatConnection?.state === signalR.HubConnectionState.Connected) {
       console.log('✅ Chat Hub already connected');
       return;
     }
 
-    // If connection exists but disconnected, stop it first
     if (this.chatConnection) {
       await this.chatConnection.stop();
     }
@@ -76,8 +72,6 @@ class SignalRService {
       return;
     }
     
-    // SignalR natively supports multiple handlers - just add it
-    // Don't call .off() - that removes ALL handlers
     this.notificationConnection.on('ReceiveNotification', (notification) => {
       console.log('📢 ReceiveNotification event for a callback');
       callback(notification);
@@ -95,8 +89,6 @@ class SignalRService {
       return;
     }
     
-    // SignalR natively supports multiple handlers - just add it
-    // Don't call .off() - that removes ALL handlers
     this.chatConnection.on('ReceiveMessage', (message) => {
       console.log('💬 ReceiveMessage event for a callback');
       callback(message);

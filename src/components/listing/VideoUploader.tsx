@@ -20,14 +20,12 @@ export const VideoUploader = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith('video/')) {
       toast.error('Vui lòng chọn file video');
       return;
     }
 
-    // Validate file size (max 100MB)
-    const maxSize = 100 * 1024 * 1024; // 100MB
+    const maxSize = 100 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error('Video không được vượt quá 100MB');
       return;

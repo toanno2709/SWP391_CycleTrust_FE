@@ -97,7 +97,6 @@ export const Header = () => {
         break;
 
       case UserRole.ADMIN:
-        // Admin has dedicated layout with sidebar, so minimal items here
         roleSpecificItems = [];
         break;
     }

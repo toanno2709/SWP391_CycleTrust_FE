@@ -49,7 +49,6 @@ export const AdminUsersPage = () => {
       const pending = await userService.getPendingSellers();
       setPendingSellers(pending);
     } catch (error) {
-      // Ignore error if no pending sellers
     }
   };
 

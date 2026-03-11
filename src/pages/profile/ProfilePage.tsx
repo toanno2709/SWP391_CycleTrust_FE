@@ -32,7 +32,7 @@ export const ProfilePage = () => {
       const updatedUser = await userService.uploadAvatar(file);
       setAvatarUrl(updatedUser.avatarUrl);
       message.success('Cập nhật ảnh đại diện thành công');
-      return false; // Prevent default upload behavior
+      return false;
     } catch (error: any) {
       message.error(error.message || 'Lỗi khi tải ảnh lên');
       return false;

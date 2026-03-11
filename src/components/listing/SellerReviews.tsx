@@ -20,7 +20,6 @@ export const SellerReviews = ({ sellerId }: SellerReviewsProps) => {
     try {
       setLoading(true);
       
-      // Load reviews and rating in parallel
       const [reviewsData, ratingData] = await Promise.all([
         reviewService.getSellerReviews(sellerId),
         reviewService.getSellerRating(sellerId)
@@ -55,7 +54,7 @@ export const SellerReviews = ({ sellerId }: SellerReviewsProps) => {
   };
 
   const getRatingDistribution = () => {
-    const distribution = [0, 0, 0, 0, 0]; // [1*, 2*, 3*, 4*, 5*]
+    const distribution = [0, 0, 0, 0, 0];
     reviews.forEach(review => {
       distribution[review.rating - 1]++;
     });

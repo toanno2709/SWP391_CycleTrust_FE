@@ -26,7 +26,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
   const hasRegisteredHandler = useRef(false);
   const selectedConversationRef = useRef(selectedConversation);
 
-  // Keep ref in sync with state
   useEffect(() => {
     selectedConversationRef.current = selectedConversation;
   }, [selectedConversation]);
@@ -42,11 +41,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
   }, [pendingListingId, pendingSellerId]);
 
   useEffect(() => {
-    // Only register handler once
     if (hasRegisteredHandler.current) return;
     hasRegisteredHandler.current = true;
 
-    // Wait for connection to be ready then register handler
     const setupHandler = () => {
       const conn = signalRService.getChatConnection();
       if (!conn || conn.state !== 'Connected') {
@@ -73,7 +70,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
           });
           scrollToBottom();
           
-          // Mark as read if not sent by current user
           if (message.senderId !== currentUserId) {
             chatService.markAsRead(message.conversationId);
           }
@@ -81,7 +77,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
           console.log('Message for different conversation, reloading list');
         }
         
-        // Always reload conversations to update last message and unread counts
         loadConversations();
       };
 
@@ -89,7 +84,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
     };
 
     setupHandler();
-    // No cleanup - keep handler always active
   }, []);
 
   const handleOpenWithListing = async (listingId: number, sellerId: number) => {
@@ -163,12 +157,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
         content: messageInput.trim()
       };
       
-      // Don't add message to state here - wait for SignalR ReceiveMessage event
-      // This prevents duplicate messages
       await chatService.sendMessage(request);
       setMessageInput('');
       
-      // Update conversations list to reflect new last message
       loadConversations();
     } catch (error) {
       console.error('Lỗi gửi tin nhắn:', error);
@@ -193,18 +184,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onClose: _onClose, onUnr
   const formatTime = (dateStr: string) => {
     if (!dateStr) return '';
     
-    // Handle different date formats from backend
     let date: Date;
     
-    // If it already has 'T' (ISO format), parse directly
     if (dateStr.includes('T')) {
       date = new Date(dateStr);
     } else {
-      // MySQL format without 'T', add 'Z' to treat as UTC
       date = new Date(dateStr + 'Z');
     }
     
-    // Check if date is valid
     if (isNaN(date.getTime())) {
       return '';
     }

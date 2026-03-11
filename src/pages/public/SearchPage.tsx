@@ -29,7 +29,7 @@ export const SearchPage = () => {
   }, [fetchAll]);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset to page 1 when filters change
+    setCurrentPage(1);
   }, [filters]);
 
   useEffect(() => {

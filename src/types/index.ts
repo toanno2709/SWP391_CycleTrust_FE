@@ -60,7 +60,7 @@ export interface User {
   fullName: string;
   avatarUrl?: string;
   isActive: boolean;
-  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED'; // For seller approval
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
   ratingAvg: number;
   ratingCount: number;
   createdAt: string;
@@ -164,7 +164,6 @@ export interface Order {
   buyer?: User;
   seller?: User;
   payments?: Payment[];
-  // Convenience fields from backend
   listingTitle?: string;
   buyerName?: string;
   sellerName?: string;

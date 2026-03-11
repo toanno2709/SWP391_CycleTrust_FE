@@ -28,24 +28,15 @@ export interface VNPayReturn {
 }
 
 export const vnpayService = {
-  /**
-   * Create VNPay payment URL and redirect user
-   */
   async createPayment(request: VNPayPaymentRequest): Promise<VNPayPaymentResponse> {
     return await apiClient.post<VNPayPaymentResponse>('/vnpay/create-payment', request);
   },
 
-  /**
-   * Process VNPay callback from query parameters
-   */
   async processCallback(queryParams: URLSearchParams): Promise<VNPayReturn> {
     const queryString = queryParams.toString();
     return await apiClient.get<VNPayReturn>(`/vnpay/callback?${queryString}`);
   },
 
-  /**
-   * Redirect to VNPay payment gateway
-   */
   async redirectToPayment(orderId: number, amount: number, orderInfo: string): Promise<void> {
     try {
       const response = await this.createPayment({
@@ -55,7 +46,6 @@ export const vnpayService = {
       });
 
       if (response.success && response.paymentUrl) {
-        // Redirect to VNPay
         window.location.href = response.paymentUrl;
       } else {
         throw new Error(response.message || 'Không thể tạo link thanh toán');
@@ -65,9 +55,6 @@ export const vnpayService = {
     }
   },
 
-  /**
-   * Get response code message in Vietnamese
-   */
   getResponseMessage(code: string): string {
     const messages: Record<string, string> = {
       '00': 'Giao dịch thành công',

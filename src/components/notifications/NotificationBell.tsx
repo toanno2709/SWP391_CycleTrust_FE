@@ -35,21 +35,17 @@ export const NotificationBell: React.FC = () => {
   const handleDropdownOpenChange = (visible: boolean) => {
     setDropdownVisible(visible);
     if (visible) {
-      // Always reload fresh data when opening dropdown
       console.log('🔄 Bell clicked - loading fresh notifications...');
       loadNotifications();
     }
   };
 
   useEffect(() => {
-    // Load initial data
     loadNotifications();
 
-    // Only register handler once
     if (hasRegisteredHandler.current) return;
     hasRegisteredHandler.current = true;
 
-    // Wait for connection to be ready then register handler
     const setupHandler = () => {
       const conn = signalRService.getNotificationConnection();
       if (!conn || conn.state !== 'Connected') {
@@ -72,7 +68,6 @@ export const NotificationBell: React.FC = () => {
     };
 
     setupHandler();
-    // No cleanup - keep handler always active
   }, []);
 
   const handleMarkAsRead = async (notificationId: number) => {

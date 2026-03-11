@@ -33,9 +33,6 @@ export interface UserListResponse {
 }
 
 export const userService = {
-  /**
-   * Get all users (Admin only)
-   */
   async getAll(params?: UserListParams): Promise<UserListResponse> {
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
@@ -54,9 +51,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to fetch users');
   },
 
-  /**
-   * Get user by ID (Admin only)
-   */
   async getById(id: number): Promise<User> {
     const response = await apiClient.get<ApiResponse<User>>(`/admin/users/${id}`);
     if (response.success && response.data) {
@@ -65,9 +59,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to fetch user');
   },
 
-  /**
-   * Create new user (Admin only)
-   */
   async create(data: CreateUserRequest): Promise<User> {
     const response = await apiClient.post<ApiResponse<User>>('/admin/users', data);
     if (response.success && response.data) {
@@ -76,9 +67,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to create user');
   },
 
-  /**
-   * Update user (Admin only)
-   */
   async update(id: number, data: UpdateUserRequest): Promise<User> {
     const response = await apiClient.put<ApiResponse<User>>(`/admin/users/${id}`, data);
     if (response.success && response.data) {
@@ -87,9 +75,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to update user');
   },
 
-  /**
-   * Delete user (Admin only)
-   */
   async delete(id: number): Promise<void> {
     const response = await apiClient.delete<ApiResponse<void>>(`/admin/users/${id}`);
     if (!response.success) {
@@ -97,9 +82,6 @@ export const userService = {
     }
   },
 
-  /**
-   * Approve seller registration (Admin only)
-   */
   async approveSeller(id: number): Promise<User> {
     const response = await apiClient.post<ApiResponse<User>>(`/admin/users/${id}/approve`);
     if (response.success && response.data) {
@@ -108,9 +90,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to approve seller');
   },
 
-  /**
-   * Reject seller registration (Admin only)
-   */
   async rejectSeller(id: number, reason?: string): Promise<User> {
     const response = await apiClient.post<ApiResponse<User>>(`/admin/users/${id}/reject`, { reason });
     if (response.success && response.data) {
@@ -119,9 +98,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to reject seller');
   },
 
-  /**
-   * Toggle user active status (Admin only)
-   */
   async toggleActive(id: number): Promise<User> {
     const response = await apiClient.patch<ApiResponse<User>>(`/admin/users/${id}/toggle-active`);
     if (response.success && response.data) {
@@ -130,9 +106,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to toggle user status');
   },
 
-  /**
-   * Get pending seller approvals (Admin only)
-   */
   async getPendingSellers(): Promise<User[]> {
     const response = await apiClient.get<ApiResponse<User[]>>('/admin/users/pending-sellers');
     if (response.success && response.data) {
@@ -141,9 +114,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to fetch pending sellers');
   },
 
-  /**
-   * Update current user profile
-   */
   async updateProfile(data: { fullName?: string; phone?: string }): Promise<User> {
     const response = await apiClient.put<ApiResponse<User>>('/users/profile', data);
     if (response.success && response.data) {
@@ -152,9 +122,6 @@ export const userService = {
     throw new Error(response.message || 'Failed to update profile');
   },
 
-  /**
-   * Change current user password
-   */
   async changePassword(data: { currentPassword: string; newPassword: string }): Promise<void> {
     const response = await apiClient.post<ApiResponse<void>>('/users/change-password', data);
     if (!response.success) {
@@ -162,9 +129,6 @@ export const userService = {
     }
   },
 
-  /**
-   * Upload user avatar
-   */
   async uploadAvatar(file: File): Promise<User> {
     const formData = new FormData();
     formData.append('file', file);

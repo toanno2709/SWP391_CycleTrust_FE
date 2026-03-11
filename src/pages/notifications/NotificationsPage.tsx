@@ -17,11 +17,9 @@ export const NotificationsPage: React.FC = () => {
   useEffect(() => {
     loadNotifications();
 
-    // Only register handler once for realtime updates
     if (hasRegisteredHandler.current) return;
     hasRegisteredHandler.current = true;
 
-    // Wait for connection to be ready then register handler
     const setupHandler = () => {
       const conn = signalRService.getNotificationConnection();
       if (!conn || conn.state !== 'Connected') {
@@ -32,7 +30,6 @@ export const NotificationsPage: React.FC = () => {
 
       const handleNewNotification = (notification: Notification) => {
         console.log('NotificationsPage: New notification received', notification);
-        // Add to beginning of array
         setNotifications(prev => [notification, ...prev]);
       };
 
@@ -40,7 +37,6 @@ export const NotificationsPage: React.FC = () => {
     };
 
     setupHandler();
-    // No cleanup - keep handler always active
   }, []);
 
   const loadNotifications = async () => {

@@ -28,7 +28,6 @@ export const LoginPage = () => {
       setUser(response.user);
       toast.success('Đăng nhập thành công!');
       
-      // Navigate based on role
       switch (response.user.role) {
         case UserRole.ADMIN:
           navigate(ROUTES.ADMIN_DASHBOARD);

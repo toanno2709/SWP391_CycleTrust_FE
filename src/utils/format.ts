@@ -12,7 +12,6 @@ export const formatCurrency = (amount: number, currency: string = 'VND'): string
 };
 
 export const formatDate = (date: string | Date): string => {
-  // If date is a string without timezone info, treat it as UTC
   let dateObj: Date;
   if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
     dateObj = new Date(date + 'Z');
@@ -29,7 +28,6 @@ export const formatDate = (date: string | Date): string => {
 };
 
 export const formatDateTime = (date: string | Date): string => {
-  // If date is a string without timezone info, treat it as UTC
   let dateObj: Date;
   if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
     dateObj = new Date(date + 'Z');
@@ -48,9 +46,7 @@ export const formatDateTime = (date: string | Date): string => {
   }).format(dateObj);
 };
 
-// Helper to convert UTC date string to Vietnam time string
 export const toVietnamTime = (date: string | Date): string => {
-  // If date is a string without timezone info, treat it as UTC
   let dateObj: Date;
   if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
     dateObj = new Date(date + 'Z');
@@ -70,7 +66,6 @@ export const toVietnamTime = (date: string | Date): string => {
 };
 
 export const toVietnamDate = (date: string | Date): string => {
-  // If date is a string without timezone info, treat it as UTC
   let dateObj: Date;
   if (typeof date === 'string' && !date.includes('Z') && !date.includes('+')) {
     dateObj = new Date(date + 'Z');

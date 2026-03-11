@@ -10,16 +10,12 @@ import { ImageUploader } from '../../components/listing/ImageUploader';
 import { VideoUploader } from '../../components/listing/VideoUploader';
 import { useForm } from '../../hooks/useForm';
 
-// Format price with dot separators
 const formatPrice = (value: string): string => {
-  // Remove all non-digit characters
   const numbers = value.replace(/\D/g, '');
   if (!numbers) return '';
-  // Add dot separators
   return Number(numbers).toLocaleString('vi-VN');
 };
 
-// Parse price to number
 const parsePrice = (value: string): number => {
   const numbers = value.replace(/\D/g, '');
   return numbers ? Number(numbers) : 0;
@@ -57,7 +53,6 @@ export const EditListingPage = () => {
     const inputValue = e.target.value;
     const formatted = formatPrice(inputValue);
     setDisplayPrice(formatted);
-    // Update actual value
     handleChange({
       target: {
         name: 'priceAmount',
@@ -73,7 +68,6 @@ export const EditListingPage = () => {
       try {
         const data = await listingService.getById(Number(id));
         
-        // Check if listing is editable (only DRAFT can be edited)
         if (data.status !== 'DRAFT') {
           toast.error('Chỉ có thể sửa listing ở trạng thái bản nháp');
           navigate('/seller/listings');
@@ -93,10 +87,8 @@ export const EditListingPage = () => {
           yearModel: data.yearModel?.toString() || '',
         });
         
-        // Format price for display
         setDisplayPrice(formatPrice(data.priceAmount.toString()));
         
-        // Load images and video
         const images = data.media?.filter(m => m.type === 'IMAGE').map(m => m.url) || [];
         const video = data.media?.find(m => m.type === 'VIDEO');
         
@@ -123,7 +115,6 @@ export const EditListingPage = () => {
 
     setSavingDraft(true);
     try {
-      // Build media array
       const media = [
         ...mediaUrls.map((url, index) => ({
           type: 'IMAGE' as const,
@@ -171,7 +162,6 @@ export const EditListingPage = () => {
 
     setSubmitting(true);
     try {
-      // Build media array
       const media = [
         ...mediaUrls.map((url, index) => ({
           type: 'IMAGE' as const,

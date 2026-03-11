@@ -11,16 +11,12 @@ import { VideoUploader } from '../../components/listing/VideoUploader';
 import { useForm } from '../../hooks/useForm';
 import { useEffect } from 'react';
 
-// Format price with dot separators
 const formatPrice = (value: string): string => {
-  // Remove all non-digit characters
   const numbers = value.replace(/\D/g, '');
   if (!numbers) return '';
-  // Add dot separators
   return Number(numbers).toLocaleString('vi-VN');
 };
 
-// Parse price to number
 const parsePrice = (value: string): number => {
   const numbers = value.replace(/\D/g, '');
   return numbers ? Number(numbers) : 0;
@@ -56,7 +52,6 @@ export const CreateListingPage = () => {
     const inputValue = e.target.value;
     const formatted = formatPrice(inputValue);
     setDisplayPrice(formatted);
-    // Update actual value
     handleChange({
       target: {
         name: 'priceAmount',
@@ -73,7 +68,6 @@ export const CreateListingPage = () => {
 
     setSavingDraft(true);
     try {
-      // Build media array
       const media = [
         ...mediaUrls.map((url, index) => ({
           type: 'IMAGE' as const,
@@ -119,7 +113,6 @@ export const CreateListingPage = () => {
 
     setLoading(true);
     try {
-      // Build media array
       const media = [
         ...mediaUrls.map((url, index) => ({
           type: 'IMAGE' as const,

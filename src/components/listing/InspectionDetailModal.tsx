@@ -36,7 +36,6 @@ export const InspectionDetailModal = ({ listing, isOpen, onClose }: InspectionDe
       style={{top: 10}}
     >
       <div className="space-y-6">
-        {/* Listing Info */}
         <div className="flex gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
           <img 
             src={listing.media?.[0]?.url || 'https://via.placeholder.com/100'}
@@ -54,7 +53,6 @@ export const InspectionDetailModal = ({ listing, isOpen, onClose }: InspectionDe
           </div>
         </div>
 
-        {/* Inspector Info */}
         {listing.inspection.inspector && (
           <div className="border-b pb-4">
             <p className="text-sm text-slate-500">Kiểm định viên</p>
@@ -110,7 +108,6 @@ export const InspectionDetailModal = ({ listing, isOpen, onClose }: InspectionDe
           </div>
         )}
 
-        {/* Report URL */}
         {listing.inspection.reportUrl && (
           <div>
             <a 

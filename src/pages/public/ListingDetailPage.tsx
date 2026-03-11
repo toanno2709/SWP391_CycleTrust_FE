@@ -40,13 +40,11 @@ export const ListingDetailPage = () => {
         const data = await listingService.getById(Number(id));
         setListing(data);
         
-        // Check if in wishlist (only for buyers)
         if (user?.role === UserRole.BUYER) {
           try {
             const isInWishlist = await wishlistService.check(Number(id));
             setInWishlist(isInWishlist);
           } catch (error) {
-            // Ignore wishlist check error
           }
         }
       } catch (error) {
@@ -71,12 +69,9 @@ export const ListingDetailPage = () => {
       toast.success('Đã tạo đơn hàng thành công!');
       setOrderModalOpen(false);
       
-      // Redirect to payment
       if (useDeposit) {
-        // Pay deposit
         navigate(`/buyer/orders/${order.id}`);
       } else {
-        // Pay full immediately - redirect to VNPay
         try {
           const { paymentUrl } = await orderService.payFull(order.id);
           window.location.href = paymentUrl;

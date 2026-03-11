@@ -6,7 +6,7 @@ export interface CloudinaryUploadResult {
   format: string;
   width?: number;
   height?: number;
-  duration?: number; // for videos
+  duration?: number;
 }
 
 export const cloudinaryService = {

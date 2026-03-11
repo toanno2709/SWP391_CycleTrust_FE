@@ -28,7 +28,6 @@ import {
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-// Mock data - sẽ thay thế bằng API call sau
 const generateMockData = () => {
   const revenueData = Array.from({ length: 12 }, (_, i) => ({
     month: `Tháng ${i + 1}`,
@@ -81,15 +80,14 @@ export default function AdminDashboardPage() {
 
   const mockData = generateMockData();
 
-  // Summary statistics
   const totalRevenue = 450000000;
   const totalOrders = 212;
   const totalUsers = 847;
   const averageOrderValue = totalRevenue / totalOrders;
 
-  const revenueGrowth = 12.5; // %
-  const orderGrowth = 8.3; // %
-  const userGrowth = 15.7; // %
+  const revenueGrowth = 12.5;
+  const orderGrowth = 8.3;
+  const userGrowth = 15.7;
 
   return (
     <div className="p-6">

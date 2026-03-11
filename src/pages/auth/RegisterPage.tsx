@@ -49,7 +49,6 @@ export const RegisterPage = () => {
         role: values.role,
       });
 
-      // If registering as SELLER, they need admin approval
       if (values.role === UserRole.SELLER) {
         toast.success('Đăng ký thành công! Tài khoản của bạn đang chờ admin phê duyệt.', {
           duration: 5000,
@@ -58,11 +57,9 @@ export const RegisterPage = () => {
         return;
       }
 
-      // For other roles (BUYER), login immediately
       setUser(response.user);
       toast.success('Đăng ký thành công!');
       
-      // Navigate based on role
       switch (response.user.role) {
         case UserRole.ADMIN:
           navigate(ROUTES.ADMIN_DASHBOARD);

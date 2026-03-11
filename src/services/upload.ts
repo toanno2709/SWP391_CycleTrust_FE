@@ -16,7 +16,6 @@ export const uploadService = {
       }
     );
 
-    // Return the file URL (will be relative path like /uploads/inspections/xxx.pdf)
     return `http://localhost:5000${response.data}`;
   },
 
@@ -34,7 +33,6 @@ export const uploadService = {
       }
     );
 
-    // Return the file URL
     return `http://localhost:5000${response.data}`;
   },
 };

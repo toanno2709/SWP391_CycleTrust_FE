@@ -16,11 +16,9 @@ export const ChatBubble: React.FC = () => {
   useEffect(() => {
     loadUnreadCount();
     
-    // Only register handler once
     if (hasRegisteredHandler.current) return;
     hasRegisteredHandler.current = true;
 
-    // Wait for connection to be ready then register handler
     const setupHandler = () => {
       const conn = signalRService.getChatConnection();
       if (!conn || conn.state !== 'Connected') {
@@ -29,7 +27,6 @@ export const ChatBubble: React.FC = () => {
         return;
       }
 
-      // Reload unread count when receiving any new message
       const handleNewMessage = (message: any) => {
         console.log('ChatBubble: New message received, reloading count', message);
         loadUnreadCount();
@@ -39,7 +36,6 @@ export const ChatBubble: React.FC = () => {
     };
 
     setupHandler();
-    // No cleanup - keep handler always active
   }, []);
 
   const loadUnreadCount = async () => {
